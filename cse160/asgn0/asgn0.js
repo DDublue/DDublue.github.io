@@ -61,7 +61,6 @@ function handleDrawOperationEvent() {
     let v4 = new Vector3();
     let op = document.getElementById("operations").value;
     let scalar = document.getElementById("scalar").value;
-    console.log(scalar);
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
