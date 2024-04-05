@@ -92,15 +92,15 @@ function handleDrawOperationEvent() {
         v3 = v1.div(scalar);
         v4 = v2.div(scalar);
     } else if (op == "mag") {
-        console.log(v1.magnitude());
-        console.log(v2.magnitude());
+        console.log("Magnitude v1: " + v1.magnitude());
+        console.log("Magnitude v2: " + v2.magnitude());
     } else if (op == "nor") {
         v3 = v1.normalize();
         v4 = v2.normalize();
     } else if (op == "dot") {
-        console.log(angleBetween(v1, v2));
+        console.log("Angle: " + angleBetween(v1, v2));
     } else if (op == "area") {
-        console.log(areaTriangle(v1, v2));
+        console.log("Area of the triangle: " + areaTriangle(v1, v2));
     }
     drawVector(v3, "green");
     drawVector(v4, "green");
