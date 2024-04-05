@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Draw a blue rectangle (canvas version)</title>
+    </head>
+
+    <body onload="main()">
+        <canvas id="example" width="400" height="400">
+            Please use a browser that supports "canvas"
+        </canvas>
+        <script src="lib/cuon-matrix-cse160.js"></script>
+        <script src="asgn0.js"></script>
+
+        <!-- Input v1 coordinates -->
+        <div>
+            v1:
+            <label for="v1_x">x</label>
+            <input type="number" id="v1_x" value="" min="-100" max="100" />
+            <label for="v1_y">y</label>
+            <input type="number" id="v1_y" value="" min="-100" max="100" />
+        </div>
+
+        <div>
+            v2:
+            <label for="v2_x">x</label>
+            <input type="number" id="v2_x" value="" min="-100" max="100" />
+            <label for="v2_y">y</label>
+            <input type="number" id="v2_y" value="" min="-100" max="100" />
+        </div>
+
+        <!-- Draw button for v1 and v2 -->
+        <div>
+            <input type="button" id="draw" value="Draw" onclick="handleDrawEvent()" />
+        </div>
+        
+        <!-- Operation select -->
+        <div>
+            <label for="operations">Operation:</label>
+            <select id="operations" name="operations">
+                <option value="">--Please choose an option--</option>
+                <option value="add">Add</option>
+                <option value="sub">Subtract</option>
+                <option value="mul">Multiply</option>
+                <option value="div">Divide</option>
+                <option value="mag">Magnitude</option>
+                <option value="nor">Normalize</option>
+                <option value="dot">Angle between</option>
+                <option value="area">Area</option>
+            </select>
+            
+            <label for="scalar">Scalar:</label>
+            <input type="number" id="scalar" value="" min="-100" max="100" />
+        </div>
+        
+        <!-- Draw operation button for v1 and v2 -->
+        <div>
+            <input type="button" id="draw_op" value="Draw" onclick="handleDrawOperationEvent()" />
+        </div>
+                
+        
+    </body>
+    </html>
