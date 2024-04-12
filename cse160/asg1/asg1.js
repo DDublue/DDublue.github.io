@@ -2,10 +2,10 @@
 // Vertex shader program
 var VSHADER_SOURCE = `
 attribute vec4 a_Position;
-attribute float a_Size;
+uniform float u_Size;
 void main() {
     gl_Position = a_Position;
-    gl_PointSize = a_Size;
+    gl_PointSize = u_Size;
   }`
 
 // Fragment shader program
@@ -20,6 +20,7 @@ var FSHADER_SOURCE = `
 let canvas;
 let gl;
 let a_Position;
+let u_Size;
 let u_FragColor;
 
 function setupWebGL() {
@@ -41,10 +42,17 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // // Get the storage location of a_Position
+  // Get the storage location of a_Position
   a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   if (a_Position < 0) {
     console.log('Failed to get the storage location of a_Position');
+    return;
+  }
+
+  // Get the storage location of a_Size
+  u_Size = gl.getUniformLocation(gl.program, 'u_Size');
+  if (u_Size < 0) {
+    console.log('Failed to get the storage location of u_Size');
     return;
   }
 
@@ -56,12 +64,19 @@ function connectVariablesToGLSL() {
   }
 }
 
+// Global related UI variables
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
+let g_selectedSize = 20.0;
+
+// Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
-  // Slider Events
+  // Color Slider Events
   document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100});
   document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100});
   document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100});
+  
+  // Size Slider Event
+  document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value });
 }
 
 function main() {
@@ -86,6 +101,7 @@ function main() {
 
 var g_points = [];  // The array for the position of a mouse press
 var g_colors = [];  // The array to store the color of a point
+var g_sizes  = [];  // The array to store the size of a point
 function click(ev) {
 
   // Extract the event click and return it in WebGL coordinates
@@ -95,8 +111,10 @@ function click(ev) {
   g_points.push([x, y]);
 
   // Store the selected color to g_colors array
-  
   g_colors.push(g_selectedColor.slice());
+
+  // Store the selected size to g_sizes array
+  g_sizes.push(g_selectedSize);
 
   // Draw every shape in g_points with respective color in g_colors
   renderAllShapes();
@@ -121,11 +139,14 @@ function renderAllShapes() {
   for(var i = 0; i < len; i++) {
     var xy = g_points[i];
     var rgba = g_colors[i];
+    var size = g_sizes[i];
 
     // Pass the position of a point to a_Position variable
     gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
     // Pass the color of a point to u_FragColor variable
     gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+    // Pass the size of a point to a_Size variable
+    gl.uniform1f(u_Size, size);
     // Draw
     gl.drawArrays(gl.POINTS, 0, 1);
   }
