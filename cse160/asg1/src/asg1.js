@@ -49,7 +49,7 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // Get the storage location of a_Size
+  // Get the storage location of u_Size
   u_Size = gl.getUniformLocation(gl.program, 'u_Size');
   if (u_Size < 0) {
     console.log('Failed to get the storage location of u_Size');
@@ -102,6 +102,9 @@ function main() {
 var g_points = [];  // The array for the position of a mouse press
 var g_colors = [];  // The array to store the color of a point
 var g_sizes  = [];  // The array to store the size of a point
+
+var g_shapes = []; // The 
+
 function click(ev) {
 
   // Extract the event click and return it in WebGL coordinates
@@ -145,7 +148,7 @@ function renderAllShapes() {
     gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
     // Pass the color of a point to u_FragColor variable
     gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-    // Pass the size of a point to a_Size variable
+    // Pass the size of a point to u_Size variable
     gl.uniform1f(u_Size, size);
     // Draw
     gl.drawArrays(gl.POINTS, 0, 1);
