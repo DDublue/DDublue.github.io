@@ -29,7 +29,7 @@ function setupWebGL() {
   canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
-  gl = getWebGLContext(canvas);
+  gl = canvas.getContext('webgl', { preserveDrawingBuffer: true });
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -71,13 +71,16 @@ let g_selectedSize = 20.0;
 
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
+  // Clear Canvas Button
+  document.getElementById('clearButton').onclick = function() { g_shapesList = []; renderAllShapes(); };
+
   // Color Slider Events
-  document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100});
-  document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100});
-  document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100});
+  document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100; });
+  document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; });
+  document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; });
   
   // Size Slider Event
-  document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value });
+  document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value; });
 }
 
 function main() {
@@ -92,6 +95,7 @@ function main() {
 
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = click;
+  canvas.onmousemove = function(ev) { if (ev.buttons == 1) { click(ev) } };
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
