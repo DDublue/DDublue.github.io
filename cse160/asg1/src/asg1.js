@@ -105,8 +105,8 @@ function main() {
   connectVariablesToGLSL();
 
   // Register function (event handler) to be called on a mouse press
-  canvas.onmousedown = click;
-  canvas.onmousemove = function(ev) { if (ev.buttons == 1) { click(ev) } };
+  canvas.onmousedown = handleClicks;
+  canvas.onmousemove = function(ev) { if (ev.buttons == 1) { handleClicks(ev) } };
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -117,7 +117,7 @@ function main() {
 
 var g_shapesList = []; // The array of points
 
-function click(ev) {
+function handleClicks(ev) {
 
   // Extract the event click and return it in WebGL coordinates
   [x,y] = convertCoordinatesEventToGL(ev);
