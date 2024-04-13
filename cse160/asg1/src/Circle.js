@@ -19,9 +19,9 @@ class Circle {
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
 
         // Draw
-        var d = size/200.0; // delta
+        var d = this.size/200.0; // delta
 
-        let angleStep = 360/this.segments;
+        let angleStep = 360/this.segment;
         for (var angle = 0; angle < 360; angle += angleStep) {
             let centerPt = [xy[0], xy[1]];
             let angle1   = angle;
