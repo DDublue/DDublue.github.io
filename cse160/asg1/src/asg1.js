@@ -70,6 +70,9 @@ const POINT    = 0;
 const TRIANGLE = 1;
 const CIRCLE   = 2;
 
+const WHITE    = [1.0, 1.0, 1.0, 1.0];
+const BLACK    = [0.0, 0.0, 0.0, 1.0];
+
 // Global related UI variables
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
 let g_selectedSize  = 5.0;
@@ -83,6 +86,9 @@ function addActionsForHtmlUI() {
   document.getElementById('squButton').onclick   = function() { g_selectedType = POINT; };
   document.getElementById('triButton').onclick   = function() { g_selectedType = TRIANGLE; };
   document.getElementById('cirButton').onclick   = function() { g_selectedType = CIRCLE; };
+
+  // Generate Picture Button Event
+  document.getElementById('genButton').onclick = function() { generatePicture(); };
 
   // Color Slider Events
   document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100; });
@@ -161,4 +167,56 @@ function renderAllShapes() {
   for(var i = 0; i < len; i++) {
     g_shapesList[i].render();
   }
+}
+
+function bufferBorder() {
+  // Points outline canvas
+  for (let x = -0.950; x < 1; x += 0.050) {
+    let pt1 = new Point();
+    let pt2 = new Point();
+    let pt3 = new Point();
+    let pt4 = new Point();
+    pt1.size = pt2.size = pt3.size = pt4.size = 10.0;
+    pt1.color = pt2.color = pt3.color = pt4.color = WHITE;
+    pt1.position = [x, -0.950];
+    pt2.position = [x,  0.950];
+    pt3.position = [-0.950, x];
+    pt4.position = [ 0.950, x];
+
+    g_shapesList.push(pt1);
+    g_shapesList.push(pt2);
+    g_shapesList.push(pt3);
+    g_shapesList.push(pt4);
+  }
+  // Debug: ruler
+  for (let x = 0; x < 1; x += 0.2) {
+    let pt = new Point();
+    pt.size = 20.0;
+    pt.color = [x+0.2, 0.0, 0.0, 1.0];
+    pt.position = [x, 0];
+    g_shapesList.push(pt);
+  }
+
+  // Debug: Center point
+  let center = new Point();
+  center.size = 1;
+  center.color = WHITE;
+  center.position = [0, 0];
+  g_shapesList.push(center);
+}
+
+function generatePicture() {
+  // Clear <canvas>
+  g_shapesList = [];
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // Border
+  bufferBorder();
+
+  // Triangles of dog
+
+
+  // Render picture
+  renderAllShapes();
+
 }
