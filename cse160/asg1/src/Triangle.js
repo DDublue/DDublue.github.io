@@ -17,17 +17,18 @@ class Triangle {
         // Pass the position of a point to a_Position variable
         // gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
 
-        // Pass the color of a point to u_FragColor variable
+        // Pass the color of a triangle to u_FragColor variable
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-        // Pass the size of a point to u_Size variable
+        // Pass the size of a triangle to u_Size variable
         gl.uniform1f(u_Size, size);
         // Draw
-        drawTriangles([xy[0], xy[1],  xy[0]+0.1, xy[1],  xy[0], xy[1]+0.1]);
+        var d = size/200.0; // delta
+        drawTriangle([xy[0], xy[1],  xy[0]+d, xy[1],  xy[0], xy[1]+d]);
     }
 }
 
 
-function drawTriangles(vertices) {
+function drawTriangle(vertices) {
   var n = 3; // The number of vertices
 
   // Create a buffer object
