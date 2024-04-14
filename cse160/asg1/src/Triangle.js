@@ -1,10 +1,10 @@
 class Triangle {
     
     // Constructor
-    constructor(position=[0.0,0.0,0.0],
+    constructor(points=null,
                 color=[1.0,1.0,1.0,1.0],
-                size=5.0,
-                points) {
+                position=[0.0,0.0,0.0],
+                size=5.0) {
         this.type = 'triangle';
         this.position = position;
         this.color = color;
@@ -22,14 +22,17 @@ class Triangle {
         // Pass the color of a triangle to u_FragColor variable
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
         
-        // Pass the size of a triangle to u_Size variable
-        gl.uniform1f(u_Size, size);
-
-        // Draw
-        var d = size/200.0; // delta
-        drawTriangle([xy[0], xy[1],
-                      xy[0]+d, xy[1],
-                      xy[0], xy[1]+d]);
+        if (!pts) { // Brush
+          // Pass the size of a triangle to u_Size variable
+          gl.uniform1f(u_Size, size);
+          // Draw
+          var d = size/200.0; // delta
+          drawTriangle([xy[0], xy[1],
+                        xy[0]+d, xy[1],
+                        xy[0], xy[1]+d]);
+        } else { // Custom triangle
+          drawTriangle(pts);
+        }
     }
 }
 
@@ -56,5 +59,4 @@ function drawTriangle(vertices) {
   gl.enableVertexAttribArray(a_Position);
   
   gl.drawArrays(gl.TRIANGLES, 0, n);
-  // return n;
 }
