@@ -1,11 +1,15 @@
 class Triangle {
     
     // Constructor
-    constructor() {
+    constructor(position=[0.0,0.0,0.0],
+                color=[1.0,1.0,1.0,1.0],
+                size=5.0,
+                points) {
         this.type = 'triangle';
-        this.position = [0.0, 0.0, 0.0];
-        this.color = [1.0, 1.0, 1.0, 1.0];
-        this.size = 5.0;
+        this.position = position;
+        this.color = color;
+        this.size = size;
+        this.points = points;
     }
 
     // Render shape
@@ -13,24 +17,26 @@ class Triangle {
         var xy   = this.position;
         var rgba = this.color;
         var size = this.size;
-    
-        // Pass the position of a point to a_Position variable
-        // gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
+        var pts  = this.points;
 
         // Pass the color of a triangle to u_FragColor variable
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+        
         // Pass the size of a triangle to u_Size variable
         gl.uniform1f(u_Size, size);
+
         // Draw
         var d = size/200.0; // delta
-        drawTriangle([xy[0], xy[1],  xy[0]+d, xy[1],  xy[0], xy[1]+d]);
+        drawTriangle([xy[0], xy[1],
+                      xy[0]+d, xy[1],
+                      xy[0], xy[1]+d]);
     }
 }
 
 
 function drawTriangle(vertices) {
   var n = 3; // The number of vertices
-
+  
   // Create a buffer object
   var vertexBuffer = gl.createBuffer();
   if (!vertexBuffer) {

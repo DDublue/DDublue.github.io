@@ -65,13 +65,10 @@ function connectVariablesToGLSL() {
   }
 }
 
-// Constants
+// Shape constants
 const POINT    = 0;
 const TRIANGLE = 1;
 const CIRCLE   = 2;
-
-const WHITE    = [1.0, 1.0, 1.0, 1.0];
-const BLACK    = [0.0, 0.0, 0.0, 1.0];
 
 // Global related UI variables
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
@@ -112,7 +109,9 @@ function main() {
 
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = handleClicks;
-  canvas.onmousemove = function(ev) { if (ev.buttons == 1) { handleClicks(ev) } };
+  canvas.onmousemove = function(ev) {
+                          if (ev.buttons == 1) { handleClicks(ev) }
+                       };
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -122,7 +121,6 @@ function main() {
 }
 
 var g_shapesList = []; // The array of points
-
 function handleClicks(ev) {
 
   // Extract the event click and return it in WebGL coordinates
@@ -130,18 +128,18 @@ function handleClicks(ev) {
 
   // Create new point
   let point;
-  if (g_selectedType == POINT) {
-    point = new Point();
-  } else if (g_selectedType == TRIANGLE) {
-    point = new Triangle();
-  } else {
-    point = new Circle();
-    point.segment = g_selectedSeg;
+  switch (g_selectedType) {
+    case POINT:
+      point = new Point([x,y], g_selectedColor.slice(), g_selectedSize);
+      break;
+    case TRIANGLE:
+      point = new Triangle([x,y], g_selectedColor.slice(), g_selectedSize);
+      break;
+    case CIRCLE:
+      point = new Circle([x,y], g_selectedColor.slice(), g_selectedSize,
+                         g_selectedSeg);
+      break;
   }
-
-  point.position = [x,y];
-  point.color = g_selectedColor.slice();
-  point.size = g_selectedSize;
   g_shapesList.push(point);
 
   // Draw every shape in g_points with respective color in g_colors
@@ -169,40 +167,84 @@ function renderAllShapes() {
   }
 }
 
+// Color constants
+const WHITE = [1.0, 1.0, 1.0, 1.0];
+const BLACK = [0.0, 0.0, 0.0, 1.0];
+const RED   = [1.0, 0.0, 0.0, 1.0];
+const GREEN = [0.0, 1.0, 0.0, 1.0];
+const BLUE  = [0.0, 0.0, 1.0, 1.0];
+
 function bufferBorder() {
   // Points outline canvas
-  for (let x = -0.950; x < 1; x += 0.050) {
-    let pt1 = new Point();
-    let pt2 = new Point();
-    let pt3 = new Point();
-    let pt4 = new Point();
-    pt1.size = pt2.size = pt3.size = pt4.size = 10.0;
-    pt1.color = pt2.color = pt3.color = pt4.color = WHITE;
-    pt1.position = [x, -0.950];
-    pt2.position = [x,  0.950];
-    pt3.position = [-0.950, x];
-    pt4.position = [ 0.950, x];
-
-    g_shapesList.push(pt1);
-    g_shapesList.push(pt2);
-    g_shapesList.push(pt3);
-    g_shapesList.push(pt4);
+  for (let x = -0.925; x < 0.975; x += 0.050) {
+    g_shapesList.push(new Point([x,-0.925], WHITE, 10.0));
+    g_shapesList.push(new Point([x, 0.925], WHITE, 10.0));
+    g_shapesList.push(new Point([-0.925,x], WHITE, 10.0));
+    g_shapesList.push(new Point([0.925, x], WHITE, 10.0));
   }
-  // Debug: ruler
-  for (let x = 0; x < 1; x += 0.2) {
-    let pt = new Point();
-    pt.size = 20.0;
-    pt.color = [x+0.2, 0.0, 0.0, 1.0];
-    pt.position = [x, 0];
-    g_shapesList.push(pt);
+}
+
+function bufferTriangleDog() {
+  function bufferTail() {
+    let t1 = (new Triangle({color: RED, points: [-0.76,-0.14,  -0.80,-0.27,  -0.79,-0.30]}));
+    drawTriangle([-0.76,-0.14,  -0.80,-0.27,  -0.79,-0.30], RED);
+    drawTriangle([-0.81,-0.35,  -0.80,-0.27,  -0.78,-0.33], GREEN);
+    drawTriangle([-0.81,-0.35,  -0.75,-0.38,  -0.78,-0.33], BLUE);
+    drawTriangle([-0.81,-0.35,  -0.75,-0.38,  -0.81,-0.40], RED);
+    drawTriangle([-0.81,-0.40,  -0.75,-0.38,  -0.77,-0.42], GREEN);
+    drawTriangle([-0.81,-0.40,  -0.81,-0.43,  -0.77,-0.42], BLUE);
+    drawTriangle([-0.79,-0.45,  -0.81,-0.43,  -0.77,-0.42], RED);
+    g_shapesList.push(t1);
   }
 
-  // Debug: Center point
-  let center = new Point();
-  center.size = 1;
-  center.color = WHITE;
-  center.position = [0, 0];
-  g_shapesList.push(center);
+  function bufferBody() {
+    // Big triangles
+    drawTriangle([ 0.00,-0.18,  -0.76,-0.14,  -0.43, 0.00], RED);
+    drawTriangle([ 0.00,-0.18,  -0.76,-0.14,  -0.79,-0.30], GREEN);
+    drawTriangle([ 0.00,-0.18,  -0.79,-0.30,  -0.53,-0.44], BLUE);
+    drawTriangle([ 0.00,-0.18,  -0.19,-0.44,  -0.53,-0.44], RED);
+    drawTriangle([ 0.00,-0.18,  -0.19,-0.44,   0.04,-0.44], GREEN);
+    drawTriangle([ 0.00,-0.18,   0.27,-0.38,   0.04,-0.44], BLUE);
+    drawTriangle([ 0.00,-0.18,   0.27,-0.38,   0.36,-0.21], RED);
+    drawTriangle([ 0.00,-0.18,   0.36,-0.04,   0.36,-0.21], GREEN);
+    drawTriangle([ 0.00,-0.18,   0.42,-0.02,   0.23, 0.07], BLUE);
+    drawTriangle([ 0.00,-0.18,   0.07, 0.15,   0.23, 0.07], RED);
+    drawTriangle([ 0.00,-0.18,   0.07, 0.15,   -0.09,0.09], GREEN);
+    drawTriangle([ 0.00,-0.18,  -0.43, 0.00,   -0.09,0.09], BLUE);
+    
+    // Small detailed triangles
+    drawTriangle([-0.62,-0.04,  -0.76,-0.14,  -0.43, 0.00], BLUE);
+    drawTriangle([-0.73,-0.42,  -0.79,-0.30,  -0.53,-0.44], RED);
+    drawTriangle([ 0.36,-0.13,   0.36,-0.04,   0.42,-0.02], RED);
+    
+  }
+
+  function bufferBackLeg() {
+
+  }
+
+  function bufferFrontLeg() {
+
+  }
+
+  function bufferHead() {
+
+  }
+
+  function bufferEar() {
+
+  }
+
+  function bufferEyes() {
+
+  }
+  bufferTail();
+  bufferBody();
+  bufferBackLeg();
+  bufferFrontLeg();
+  bufferHead();
+  bufferEar();
+  bufferEyes();
 }
 
 function generatePicture() {
@@ -212,11 +254,12 @@ function generatePicture() {
 
   // Border
   bufferBorder();
-
+  
   // Triangles of dog
-
-
-  // Render picture
+  bufferTriangleDog();
+  // Render border
   renderAllShapes();
+  
+  
 
 }
