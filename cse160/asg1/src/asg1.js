@@ -29,11 +29,13 @@ function setupWebGL() {
   canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
-  gl = canvas.getContext('webgl', { preserveDrawingBuffer: true });
+  gl = canvas.getContext('webgl', { preserveDrawingBuffer: true, });
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
 function connectVariablesToGLSL() {
@@ -92,7 +94,10 @@ function addActionsForHtmlUI() {
   document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; });
   document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; });
   
-  // Size and Segment Slider Event
+  // Transparency Slider Event
+  document.getElementById('alphaSlide').addEventListener('mouseup', function() { g_selectedColor[3] = (100-this.value+1)/100; });
+  
+  // Size and Segment Slider Events
   document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value; });
   document.getElementById('segmentSlide').addEventListener('mouseup', function() { g_selectedSeg = this.value; });
 }
@@ -159,9 +164,11 @@ function convertCoordinatesEventToGL(ev) {
 function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clear(gl.DEPTH_BUFFER_BIT);
 
   var len = g_shapesList.length;
   for(var i = 0; i < len; i++) {
+    gl.clear(gl.DEPTH_BUFFER_BIT);
     g_shapesList[i].render();
   }
 }
