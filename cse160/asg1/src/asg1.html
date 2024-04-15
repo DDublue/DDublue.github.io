@@ -9,11 +9,27 @@
     <canvas id="webgl" width="400" height="400">
     Please use a browser that supports "canvas"
     </canvas>
+    <img src="../assets/dog.jpg" id="image" style="display:none" height="400"/>
     <br><br>
     <section>
       <div>
         <button type="button" id="clearButton">Clear Canvas</button>
         <button type="button" id="genButton">Generate Picture</button>
+        <button type="button" id="picButton" onclick="show()">Show Picture</button>
+        <script>
+          function show() {
+            var image = document.getElementById('image');
+            var button = document.getElementById('picButton');
+            if (button.innerHTML == "Show Picture") {
+              button.innerHTML = "Hide Picture";
+              image.style.display = "inline-block";
+            } else {
+              button.innerHTML = "Show Picture";
+              image.style.display = "none";
+
+            }
+          }
+        </script>
       </div>
       <br>
       <div>
