@@ -1,29 +1,31 @@
 import * as THREE from '../lib/node_modules/build/three.module.js';
 import {OrbitControls} from '../lib/node_modules/addons/OrbitControls.js';
-import {} from '../lib/node_modules/addons/MTLLoader.js';
+import {MTLLoader} from '../lib/node_modules/addons/MTLLoader.js';
 import {OBJLoader} from '../lib/node_modules/addons/OBJLoader.js';
 
+// Help from three.js tutorials linked on asg 5a canvas page
 function main() {
   // Canvas setup
   const canvas = document.querySelector('#c');
   const renderer = new THREE.WebGLRenderer( {antialias: true, canvas} );
 
   // Camera setup
-  const fov = 90;
+  const fov = 75;
   const aspect = 16/9;
   const near = 0.1;
-  const far = 100;
+  const far = 50;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.set(0, 10, 20);
+  camera.position.set(10, 1, 10);
 
   // Orbit control
   const controls = new OrbitControls(camera, canvas);
-  controls.target.set(0, 5, 0);
+  controls.target.set(0, 0, 0);
   controls.update();
 
 
-  // Scene setup: cube
+  // Scene setup
   const scene = new THREE.Scene();
+  scene.background = new THREE.Color('black');
 
   // Mesh = geometry + material; add mesh to scene
   const boxWidth = 1;
@@ -51,7 +53,7 @@ function main() {
   {
     const skyColor = 0xB1E1FF; // light blue
     const groundColor = 0xB1E1FF; // brown
-    const intensity = 2;
+    const intensity = 1;
     const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
     scene.add(light);
   }
@@ -59,18 +61,30 @@ function main() {
   // Directional light
   {
     const color = 0xFFFFFF;
-    const intensity = 3;
+    const intensity = 2;
     const light = new THREE.DirectionalLight(color, intensity);
     light.position.set(-1, 2, 4);
     scene.add(light);
+    scene.add(light.target);
   }
   
+  // 3D model and material
   {
-  // 3D model
-  const objLoader = new OBJLoader();
-  objLoader.load('../assets/cottage_obj.obj', (root) => {
-    scene.add(root);
-  });
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load('../assets/cottage_obj.mtl', (mtl) => {
+      mtl.preload();
+      const objLoader = new OBJLoader();
+      objLoader.setMaterials(mtl);
+      objLoader.load('../assets/cottage_obj.obj', (root) => {
+        root.scale.set(0.2,0.2,0.2);
+        root.position.set(0,-1, -4);
+        scene.add(root);
+      })
+    });
+  }
+
+  // Material for 3D model
+  {
   }
 
 
