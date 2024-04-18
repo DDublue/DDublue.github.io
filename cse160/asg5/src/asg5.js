@@ -22,7 +22,6 @@ function main() {
   controls.target.set(0, 0, 0);
   controls.update();
 
-
   // Scene setup
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('black');
@@ -82,11 +81,7 @@ function main() {
       })
     });
   }
-
-  // Material for 3D model
-  {
-  }
-
+  
 
   // --- FUNCTIONS ---
 
