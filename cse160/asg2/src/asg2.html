@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Asgn2: Blocky Animal</title>
+  </head>
+
+  <body onload="main()">
+    <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <img src="../assets/dog.jpg" id="image" style="display:none" height="400"/>
+    <br><br>
+    <section>
+      <div>
+        <button type="button" id="clearButton">Clear Canvas</button>
+      </div>
+      <br>
+      <div>
+        <div>Drawing Mode:</div>
+        <button type="button" id="squButton">Squares</button>
+        <button type="button" id="triButton">Triangles</button>
+        <button type="button" id="cirButton">Circles</button>
+      </div>
+      <br>
+      <div>
+        <div>Shape Color:</div>
+        Red
+        <input type="range" min="0" max="100" value="100" class="slider" id="redSlide">
+        Green
+        <input type="range" min="0" max="100" value="100" class="slider" id="greenSlide">
+        Blue
+        <input type="range" min="0" max="100" value="100" class="slider" id="blueSlide">
+      </div>
+      <br>
+      <div>
+        Camera Angle:
+        <input type="range" min="-45" max="135" value="15" class="slider" list="angleMarkers" id="angleSlide">
+
+        <datalist id="angleMarkers">
+          <option value="-45"></option>
+          <option value="0"></option>
+          <option value="45"></option>
+          <option value="90"></option>
+          <option value="135"></option>
+        </datalist>
+      </div>
+    </section>
+    <br><br>
+    <br><br>
+    <p>David Wu</p>
+    <p>darwu@ucsc.edu</p>
+    
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix-cse160.js"></script>
+    <script src="Color.js"></script>
+    <script src="ImageGen.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Circle.js"></script>
+    <script src="Cube.js"></script>
+    <script src="Point.js"></script>
+    <script src="asg2.js"></script>
+  </body>
+</html>
