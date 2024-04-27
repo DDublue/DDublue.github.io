@@ -137,23 +137,210 @@ function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // Draw the body cube
-  let body = new Cube();
-  body.color = LIGHT;
-  body.matrix.setTranslate(-0.25,-0.5,0);
-  body.matrix.rotate(0,0,0,1);
-  body.matrix.scale(0.5,0.5,0.5);
-  body.render();
+  // ----------------------------------
+  // WOLF FROM MINECRAFT  
+  // ----------------------------------
+
+  // Hold all the blocks of wolf in an array
+  let wolfBlocks = [];
+
+  // Head
+  {
+  // Head base
+  let head = new Cube();
+  head.color = [0.87,0.87,0.87,1]; // light gray 0.87
+  head.matrix.setTranslate(-0.2,-0.2,0); // move base
+  head.matrix.translate(0.041,0.015,-0.122);
+  head.matrix.scale(0.4,0.4,0.4); // scalar
+  head.matrix.scale(0.6,0.6,0.4);
+  wolfBlocks.push(head);
+  head.render();
   
-  // Draw a left arm
-  let leftArm = new Cube();
-  leftArm.color = [1,1,0,1];
-  leftArm.matrix.setTranslate(0,-0.5,0);
-  leftArm.matrix.rotate(-5,1,0,0);
-  leftArm.matrix.rotate(0,0.0,0.0,1.0);
-  leftArm.matrix.scale(0.25,0.7,0.5);
-  leftArm.matrix.translate(-0.5,0.0,0.0);
-  leftArm.render();
+  // Lower head
+  let lowerHead = new Cube();
+  lowerHead.color = [0.72,0.63,0.6,1]; // light brownish
+  lowerHead.matrix.setTranslate(-0.2,-0.2,0); // move base
+  lowerHead.matrix.translate(0.1,0.055,-0.125);
+  lowerHead.matrix.scale(0.4,0.4,0.4); // scalar
+  lowerHead.matrix.scale(0.3,0.3,0.15);
+  wolfBlocks.push(lowerHead);
+  lowerHead.render();
+
+  // Upper mouth
+  let upperMouth = new Cube();
+  upperMouth.color = [0.85,0.73,0.6,1]; // light light brownish
+  upperMouth.matrix.setTranslate(-0.2,-0.2,0); // move base
+  upperMouth.matrix.translate(0.1,0.055,-0.24);
+  upperMouth.matrix.scale(0.4,0.4,0.4); // scalar
+  upperMouth.matrix.scale(0.3,0.2,0.4);
+  wolfBlocks.push(upperMouth);
+  upperMouth.render();
+
+  // Lower mouth
+  let lowerMouth = new Cube();
+  lowerMouth.color = [0.1,0.1,0.1,1]; // light black
+  lowerMouth.matrix.setTranslate(-0.2,-0.2,0); // move base
+  lowerMouth.matrix.translate(0.1,0.015,-0.24);
+  lowerMouth.matrix.scale(0.4,0.4,0.4); // scalar
+  lowerMouth.matrix.scale(0.3,0.1,0.4);
+  wolfBlocks.push(lowerMouth);
+  lowerMouth.render();
+
+  // Right eye
+  let rightEye = new Cube();
+  rightEye.color = [1,1,1,1]; // white
+  rightEye.matrix.setTranslate(-0.2,-0.2,0); // move base
+  rightEye.matrix.translate(0.0405,0.135,-0.13);
+  rightEye.matrix.scale(0.4,0.4,0.4); // scalar
+  rightEye.matrix.scale(0.2,0.1,0.1);
+  wolfBlocks.push(rightEye);
+  rightEye.render();
+
+  // Right pupil
+  let rightPupil = new Cube();
+  rightPupil.color = [0.05,0.05,0.05,1]; // black
+  rightPupil.matrix.setTranslate(-0.2,-0.2,0); // move base
+  rightPupil.matrix.translate(0.090,0.135,-0.133);
+  rightPupil.matrix.scale(0.4,0.4,0.4); // scalar
+  rightPupil.matrix.scale(0.1,0.1,0.1);
+  wolfBlocks.push(rightPupil);
+  rightPupil.render();
   
+  // Left eye
+  let leftEye = new Cube();
+  leftEye.color = [1,1,1,1]; // white
+  leftEye.matrix.setTranslate(-0.2,-0.2,0); // move base
+  leftEye.matrix.translate(0.200,0.135,-0.13);
+  leftEye.matrix.scale(0.4,0.4,0.4); // scalar
+  leftEye.matrix.scale(0.2,0.1,0.1);
+  wolfBlocks.push(leftEye);
+  leftEye.render();
+
+  // Left pupil
+  let leftPupil = new Cube();
+  leftPupil.color = [0.05,0.05,0.05,1]; // black
+  leftPupil.matrix.setTranslate(-0.2,-0.2,0); // move base
+  leftPupil.matrix.translate(0.195,0.135,-0.133);
+  leftPupil.matrix.scale(0.4,0.4,0.4); // scalar
+  leftPupil.matrix.scale(0.1,0.1,0.1);
+  wolfBlocks.push(leftPupil);
+  leftPupil.render();
+  
+  // Nose
+  let nose = new Cube();
+  nose.color = [0.1,0.1,0.1,1]; // light black
+  nose.matrix.setTranslate(-0.2,-0.2,0); // move base
+  nose.matrix.translate(0.14,0.095,-0.25);
+  nose.matrix.scale(0.4,0.4,0.4); // scalar
+  nose.matrix.scale(0.1,0.1,0.1);
+  wolfBlocks.push(nose);
+  nose.render();
+
+  // Right ear
+  let rightEar = new Cube();
+  rightEar.color = [0.85,0.85,0.85,1] // light gray 0.85
+  rightEar.matrix.setTranslate(-0.2,-0.2,0); // move base
+  rightEar.matrix.translate(0.195,0.23,-0.04);
+  rightEar.matrix.scale(0.4,0.4,0.4); // scalar
+  rightEar.matrix.scale(0.2,0.3,0.1);
+  wolfBlocks.push(rightEar);
+  rightEar.render();
+
+  // Left ear
+  let leftEar = new Cube();
+  leftEar.color = [0.85,0.85,0.85,1] // light gray 0.85
+  leftEar.matrix.setTranslate(-0.2,-0.2,0); // move base
+  leftEar.matrix.translate(0.044,0.23,-0.04);
+  leftEar.matrix.scale(0.4,0.4,0.4); // scalar
+  leftEar.matrix.scale(0.2,0.3,0.1);
+  wolfBlocks.push(leftEar);
+  leftEar.render();
+
+  }
+
+  // Body
+  {
+  // Front body
+  let front = new Cube();
+  front.color = [0.9,0.9,0.9,1]; // Light gray 0.9
+  front.matrix.setTranslate(-0.2,-0.2,0); // move base
+  front.matrix.translate(0,0,0);
+  front.matrix.scale(0.4,0.4,0.4); // scalar
+  front.matrix.scale(0.8,0.7,0.6);
+  wolfBlocks.push(front);
+  front.render();
+  
+  // Back body
+  let back = new Cube();
+  back.color = [0.87,0.87,0.87,1]; // Light gray 0.87
+  back.matrix.setTranslate(-0.2,-0.2,0); // move base
+  back.matrix.translate(0.036,0,0.22);
+  back.matrix.scale(0.4,0.4,0.4); // scalar
+  back.matrix.scale(0.6,0.6,1);
+  wolfBlocks.push(back);
+  back.render();
+
+  // Tail
+  let tail = new Cube();
+  tail.color = [0.9,0.9,0.9,1]; // Light gray 0.9
+  tail.matrix.setTranslate(-0.2,-0.2,0); // move base
+  tail.matrix.translate(0.115,0.175,0.55);
+  tail.matrix.rotate(45,5,0,0);
+  tail.matrix.scale(0.4,0.4,0.4); // scalar
+  tail.matrix.scale(0.2,0.2,0.8);
+  wolfBlocks.push(tail);
+  tail.render();
+  }
+
+  // Limbs
+  {
+  // Right front leg
+  let rightFrontLeg = new Cube();
+  rightFrontLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
+  rightFrontLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
+  rightFrontLeg.matrix.translate(0.055,-0.275,0.03);
+  rightFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
+  rightFrontLeg.matrix.scale(0.2,0.8,0.2);
+  wolfBlocks.push(rightFrontLeg);
+  rightFrontLeg.render();
+  
+  // Left front leg
+  let leftFrontLeg = new Cube();
+  leftFrontLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
+  leftFrontLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
+  leftFrontLeg.matrix.translate(0.185,-0.275,0.03);
+  leftFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
+  leftFrontLeg.matrix.scale(0.2,0.8,0.2);
+  wolfBlocks.push(leftFrontLeg);
+  leftFrontLeg.render();
+  
+  // Right back leg
+  let rightBackLeg = new Cube();
+  rightBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
+  rightBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
+  rightBackLeg.matrix.translate(0.055,-0.275,0.5);
+  rightBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
+  rightBackLeg.matrix.scale(0.2,0.8,0.2);
+  wolfBlocks.push(rightBackLeg);
+  rightBackLeg.render();
+  
+  // Left back leg
+  let leftBackLeg = new Cube();
+  leftBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
+  leftBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
+  leftBackLeg.matrix.translate(0.185,-0.275,0.5);
+  leftBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
+  leftBackLeg.matrix.scale(0.2,0.8,0.2);
+  wolfBlocks.push(leftBackLeg);
+  leftBackLeg.render();
+  
+  }
+  
+  // // Scale down and render wolf (ENABLE THIS INSTEAD MAYBE LATER)
+  // for (block of wolfBlocks) {
+  //   block.matrix.scale(0.5,0.5,0.5); // 
+  //   block.render();
+  // }
+
 
 }

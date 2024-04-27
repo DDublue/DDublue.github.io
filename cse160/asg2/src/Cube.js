@@ -47,14 +47,14 @@ class Cube {
       drawTriangle3D( [0.0,0.0,1.0,  0.0,0.0,0.0,  0.0,1.0,0.0] );
       
       // Pass the color of a point to u_FragColor uniform variable
-      gl.uniform4f(u_FragColor, rgba[0]*0.7, rgba[1]*0.7, rgba[2]*0.7, rgba[3]);
+      gl.uniform4f(u_FragColor, rgba[0]*0.75, rgba[1]*0.75, rgba[2]*0.75, rgba[3]);
       
       // Back of cube
       drawTriangle3D( [0.0,1.0,1.0,  1.0,1.0,1.0,  1.0,0.0,1.0] );
       drawTriangle3D( [0.0,1.0,1.0,  0.0,0.0,1.0,  1.0,0.0,1.0] );
       
       // Pass the color of a point to u_FragColor uniform variable
-      gl.uniform4f(u_FragColor, rgba[0]*0.65, rgba[1]*0.65, rgba[2]*0.65, rgba[3]);
+      gl.uniform4f(u_FragColor, rgba[0]*0.7, rgba[1]*0.7, rgba[2]*0.7, rgba[3]);
       
       // Bottom of cube
       drawTriangle3D( [0.0,0.0,0.0,  0.0,0.0,1.0,  1.0,0.0,1.0] );
