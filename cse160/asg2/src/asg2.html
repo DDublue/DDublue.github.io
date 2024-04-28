@@ -24,6 +24,16 @@
       </div>
       <br>
       <div>
+        Animation
+        <select name="animation" id="animationSelect" value=''>
+          <option value="">None
+        </option>
+          <option value="idleAnimation">Idle</option>
+          <option value="walkAnimation">Walking</option>
+          <option value="sitAnimation">Sitting</option>
+        </select>
+      </div>
+      <div>
         <p>
           Head:
           <input type="range" min="-15" max="15" value="0" class="slider" id="headSlide">
@@ -38,7 +48,7 @@
         </p>
         <p>
           Tail:
-          <input type="range" min="-60" max="45" value="0" class="slider" id="tailSlide">
+          <input type="range" min="-60" max="45" value="45" class="slider" id="tailSlide">
         </p>
         <p>
           Right Front Leg:
