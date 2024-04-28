@@ -170,7 +170,7 @@ function renderAllShapes() {
   let back = new Cube();
   back.color = [0.87,0.87,0.87,1]; // Light gray 0.87
   back.matrix.setTranslate(-0.2,-0.2,0); // move base
-  back.matrix = frontCoordinatesMat;
+  back.matrix = new Matrix4(frontCoordinatesMat);
   back.matrix.translate(0.036,0,0.22);
   back.matrix.translate(0,0.24,0);
   back.matrix.rotate(g_backBody,1,0,0);
@@ -185,7 +185,7 @@ function renderAllShapes() {
   let tail = new Cube();
   tail.color = [0.9,0.9,0.9,1]; // Light gray 0.9
   tail.matrix.setTranslate(-0.2,-0.2,0); // move baseback
-  tail.matrix = backCoordinatesMat;
+  tail.matrix = new Matrix4(backCoordinatesMat);
   tail.matrix.translate(0.085,0.15,0.37);
   tail.matrix.translate(0,0.04,0.01);
   tail.matrix.rotate(g_tail,1,0,0);
@@ -204,7 +204,7 @@ function renderAllShapes() {
   head.matrix.setTranslate(-0.2,-0.2,0); // move base
   head.matrix.translate(0.041,0.015,-0.1);
   head.matrix.translate(0,0.12,0.16);
-  head.matrix.rotate(g_headAngle,1,0,0);
+  head.matrix.rotate(-g_headAngle,1,0,0);
   head.matrix.translate(0,-0.12,-0.16);
   var headCoordinatesMat = new Matrix4(head.matrix);
   head.matrix.scale(0.4,0.4,0.4); // scalar
@@ -304,7 +304,8 @@ function renderAllShapes() {
   let rightEar = new Cube();
   rightEar.color = [0.85,0.85,0.85,1] // light gray 0.85
   rightEar.matrix.setTranslate(-0.2,-0.2,0); // move base
-  rightEar.matrix.translate(0.195,0.23,-0.04);
+  rightEar.matrix = new Matrix4(headCoordinatesMat);
+  rightEar.matrix.translate(0.01,0.23,0.06);
   rightEar.matrix.scale(0.4,0.4,0.4); // scalar
   rightEar.matrix.scale(0.2,0.3,0.1);
   wolfBlocks.push(rightEar);
@@ -314,7 +315,8 @@ function renderAllShapes() {
   let leftEar = new Cube();
   leftEar.color = [0.85,0.85,0.85,1] // light gray 0.85
   leftEar.matrix.setTranslate(-0.2,-0.2,0); // move base
-  leftEar.matrix.translate(0.044,0.23,-0.04);
+  leftEar.matrix = new Matrix4(headCoordinatesMat);
+  leftEar.matrix.translate(0.158,0.23,0.06);
   leftEar.matrix.scale(0.4,0.4,0.4); // scalar
   leftEar.matrix.scale(0.2,0.3,0.1);
   wolfBlocks.push(leftEar);
@@ -328,7 +330,8 @@ function renderAllShapes() {
   let rightFrontLeg = new Cube();
   rightFrontLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   rightFrontLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  rightFrontLeg.matrix.translate(0.055,-0.25,0.03);
+  rightFrontLeg.matrix = new Matrix4(frontCoordinatesMat);
+  rightFrontLeg.matrix.translate(0.055,-0.30,0.03);
   rightFrontLeg.matrix.translate(0,0.4,0.04);
   rightFrontLeg.matrix.rotate(g_rightFrontAngle,1,0,0);
   rightFrontLeg.matrix.translate(0,-0.4,-0.04);
@@ -341,7 +344,8 @@ function renderAllShapes() {
   let leftFrontLeg = new Cube();
   leftFrontLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   leftFrontLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  leftFrontLeg.matrix.translate(0.185,-0.25,0.03);
+  leftFrontLeg.matrix = new Matrix4(frontCoordinatesMat);
+  leftFrontLeg.matrix.translate(0.185,-0.30,0.03);
   leftFrontLeg.matrix.translate(0,0.4,0.04);
   leftFrontLeg.matrix.rotate(g_leftFrontAngle,1,0,0);
   leftFrontLeg.matrix.translate(0,-0.4,-0.04);
@@ -354,7 +358,8 @@ function renderAllShapes() {
   let rightBackLeg = new Cube();
   rightBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   rightBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  rightBackLeg.matrix.translate(0.055,-0.25,0.5);
+  rightBackLeg.matrix = new Matrix4(backCoordinatesMat);
+  rightBackLeg.matrix.translate(0.02,-0.3,0.3);
   rightBackLeg.matrix.translate(0,0.4,0.04);
   rightBackLeg.matrix.rotate(g_rightBackAngle,1,0,0);
   rightBackLeg.matrix.translate(0,-0.4,-0.04);
@@ -367,7 +372,8 @@ function renderAllShapes() {
   let leftBackLeg = new Cube();
   leftBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   leftBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  leftBackLeg.matrix.translate(0.185,-0.25,0.5);
+  leftBackLeg.matrix = new Matrix4(backCoordinatesMat);
+  leftBackLeg.matrix.translate(0.15,-0.30,0.3);
   leftBackLeg.matrix.translate(0,0.4,0.04);
   leftBackLeg.matrix.rotate(g_leftBackAngle,1,0,0);
   leftBackLeg.matrix.translate(0,-0.4,-0.04);
