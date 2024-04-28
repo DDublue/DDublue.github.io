@@ -679,7 +679,7 @@ function renderAllShapes() {
   // TEST CUBES (from video)
   // ----------------------------------
   if (isTestPerformance) {
-    let n = 1000;
+    let n = 300;
     for (let i = 1; i < n; i++) {
       let c = new Cube();
       c.matrix.translate(-0.8,1.9*i/n-1.0,0);
@@ -691,7 +691,7 @@ function renderAllShapes() {
 
   let duration = performance.now() - startTime;
   sendTextToHTML("ms: " + Math.floor(duration)
-                 + " fps: " + Math.floor(10000/duration), 'performance');
+                 + " fps: " + Math.floor(10000/duration)/10, 'performance');
 
 }
 

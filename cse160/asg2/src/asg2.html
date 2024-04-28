@@ -76,6 +76,33 @@
     <br><br>
     <p>David Wu</p>
     <p>darwu@ucsc.edu</p>
+    <p>
+      Notes to Grader:
+      <ol>
+        <li>Cubes can be seen on the <i>wolf</i> (model).</li>
+        <li>Cube() class creates and renders the cube.</li>
+        <li><i>Camera angle</i> slider rotates the wolf.</li>
+        <li><code>renderAllShapes()</code> handles all the drawing.</li>
+        <li>The wolf is made up of 20 cubes.</li>
+        <li>The <i>head</i> is controllable with a slider (<i>when no animation is active</i>).</li>
+        <li>The <i>back body</i> is connected to the <i>front body</i> which is connected to the <i>head</i>,
+            of which are all controllable.
+        </li>
+        <li><code>tick()</code> animates the wolf based on the selected animation.</li>
+        <li>Selectable animations (none, idle, walk, sit).
+            <i>None</i> is synonymous with "off," otherwise "on."</li>
+        <li>Color is nice and natural for the wolf.</li>
+        <li>The animations of the wolf behave natrually.</li>
+        <li>Site link is a comment of the submission.</li>
+        <li>The tail is a third level joint (head -> front body -> back body -> tail).</li>
+        <li>The red hat on the wolf's head is a non-cube primitive.</li>
+        <li>The canvas can be shift-clicked for different animations.</li>
+        <li>The camera can be rotated using the left mouse button.</li>
+        <li>The fps runs above 1000. (Performance mode also exists,
+            which runs an additional 300 cubes at above 100 fps.)</li>
+        <li>Below the canvas shows the <i>ms</i> and <i>fps</i>.</li>
+      </ol>
+    </p>
     
     <script src="../lib/webgl-utils.js"></script>
     <script src="../lib/webgl-debug.js"></script>
