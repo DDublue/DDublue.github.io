@@ -101,6 +101,9 @@ let g_rightFrontAngle = 0;
 let g_leftFrontAngle = 0;
 let g_rightBackAngle = 0;
 let g_leftBackAngle = 0;
+// Eyelid y-size
+let g_eyelidSize = 0;
+
 // Animation Select
 // '', 'idleAnimation', 'walkAnimation', 'sitAnimation'
 let g_animationSelect = '';
@@ -123,13 +126,15 @@ let h_leftBackSlide = document.getElementById('leftBackSlide');
 let h_animationSelect = document.getElementById('animationSelect');
 let h_resetButton = document.getElementById('resetAnimationButton');
 
+// Test performance
+let isTestPerformance = false;
+
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
   // Angle Slider Events
   h_angleSlide.addEventListener('input',
     function() {
       g_globalAngle = this.value;
-      console.log(`FROM ACTION: ${g_globalAngle}`);
       renderAllShapes();
     }
   );
@@ -218,6 +223,13 @@ function addActionsForHtmlUI() {
       isShiftKeyHeld = true;
     }
   );
+
+  document.getElementById('offPerformanceMode').onclick = function() {
+    isTestPerformance = false;
+  };
+  document.getElementById('onPerformanceMode').onclick = function() {
+    isTestPerformance = true;
+  };
 
 }
 
@@ -362,10 +374,19 @@ function updateAnimationAngles() {
   h_leftFrontSlide.value  = g_leftFrontAngle;
   h_rightBackSlide.value  = g_rightBackAngle;
   h_leftBackSlide.value   = g_leftBackAngle;
+  // Animate blinking
+  if (g_seconds % 3 < 0.07) {
+    g_eyelidSize = 0.06 + Math.sin(g_seconds*50)*0.06;
+  } else {
+    g_eyelidSize = 0.01;
+  }
 }
 
 // Draw every shape that is supposed to be in the canvas
 function renderAllShapes() {
+
+  // Check time at the start of this function
+  let startTime = performance.now();
 
   // Pass matrix to u_ModelMatrix attribute
   let globalRotMat = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
@@ -517,6 +538,19 @@ function renderAllShapes() {
     rightEye.matrix.scale(0.2,0.1,0.1);
     wolfBlocks.push(rightEye);
   
+    // Right lid
+    let rightLid = new Cube();
+    rightLid.color = [0.95,0.95,0.95,1]; // light gray 0.95
+    rightLid.matrix.setTranslate(-0.2,-0.2,0); // move base
+    rightLid.matrix = new Matrix4(headCoordinatesMat);
+    rightLid.matrix.translate(0.001,0.17,-0.01);
+    rightLid.matrix.translate(0,0,0);
+    rightLid.matrix.rotate(180,1,0,0);
+    rightLid.matrix.translate(0,0,0);
+    rightLid.matrix.scale(0.4,0.4,0.4); // scalar
+    rightLid.matrix.scale(0.21,g_eyelidSize,0.01);
+    wolfBlocks.push(rightLid);
+    
     // Right pupil
     let rightPupil = new Cube();
     rightPupil.color = [0.05,0.05,0.05,1]; // black
@@ -536,7 +570,19 @@ function renderAllShapes() {
     leftEye.matrix.scale(0.4,0.4,0.4); // scalar
     leftEye.matrix.scale(0.2,0.1,0.1);
     wolfBlocks.push(leftEye);
-  
+    
+    // Left lid
+    let leftLid = new Cube();
+    leftLid.color = [0.95,0.95,0.95,1]; // light gray 0.95
+    leftLid.matrix.setTranslate(-0.2,-0.2,0); // move base
+    leftLid.matrix = new Matrix4(headCoordinatesMat);
+    leftLid.matrix.translate(0.158,0.17,-0.01);
+    leftLid.matrix.translate(0,0,0);
+    leftLid.matrix.rotate(180,1,0,0);
+    leftLid.matrix.translate(0,0,0);
+    leftLid.matrix.scale(0.4,0.4,0.4); // scalar
+    leftLid.matrix.scale(0.21,g_eyelidSize,0.01);
+    wolfBlocks.push(leftLid);
     // Left pupil
     let leftPupil = new Cube();
     leftPupil.color = [0.05,0.05,0.05,1]; // black
@@ -629,4 +675,31 @@ function renderAllShapes() {
     }
   }
 
+  // ----------------------------------
+  // TEST CUBES (from video)
+  // ----------------------------------
+  if (isTestPerformance) {
+    let n = 1000;
+    for (let i = 1; i < n; i++) {
+      let c = new Cube();
+      c.matrix.translate(-0.8,1.9*i/n-1.0,0);
+      c.matrix.rotate(g_seconds*100,1,1,1);
+      c.matrix.scale(0.1, 0.5/n,1/n);
+      c.render();
+    }
+  }
+
+  let duration = performance.now() - startTime;
+  sendTextToHTML("ms: " + Math.floor(duration)
+                 + " fps: " + Math.floor(10000/duration), 'performance');
+
+}
+
+function sendTextToHTML(text, htmlID) {
+  let h_element = document.getElementById(htmlID);
+  if (!h_element) {
+    console.log("Failed to get " + htmlID + " from HTML");
+    return;
+  }
+  h_element.innerHTML = text;
 }

@@ -11,22 +11,32 @@
     </canvas>
     <img src="../assets/dog.jpg" id="image" style="display:none" height="400"/>
     <section>
-      <div>
-        Camera Angle:
-        <input type="range" min="0" max="359" value="45" class="slider" id="angleSlide">
+      <div id="performance">
+        ms: fps:
       </div>
-      <br>
+      <div>
+        Performance Mode:
+        <button type="button" id="onPerformanceMode">On</button>
+        <button type="button" id="offPerformanceMode">Off</button>
+      </div>
+      <p>-</p>
       <div>
         Animation
         <select name="animation" id="animationSelect" value=''>
           <option value="">None
-        </option>
+          </option>
           <option value="idleAnimation">Idle</option>
           <option value="walkAnimation">Walking</option>
           <option value="sitAnimation">Sitting</option>
         </select>
         <button type="button" id="resetAnimationButton" style="display:inline-block">Reset</button>
       </div>
+      <p>-</p>
+      <div>
+        Camera Angle:
+        <input type="range" min="0" max="359" value="45" class="slider" id="angleSlide">
+      </div>
+      <p>-</p>
       <div>
         <p>
           Head:
