@@ -10,32 +10,10 @@
     Please use a browser that supports "canvas"
     </canvas>
     <img src="../assets/dog.jpg" id="image" style="display:none" height="400"/>
-    <br><br>
     <section>
       <div>
-        <button type="button" id="clearButton">Clear Canvas</button>
-      </div>
-      <br>
-      <div>
-        <div>Drawing Mode:</div>
-        <button type="button" id="squButton">Squares</button>
-        <button type="button" id="triButton">Triangles</button>
-        <button type="button" id="cirButton">Circles</button>
-      </div>
-      <br>
-      <div>
-        <div>Shape Color:</div>
-        Red
-        <input type="range" min="0" max="100" value="100" class="slider" id="redSlide">
-        Green
-        <input type="range" min="0" max="100" value="100" class="slider" id="greenSlide">
-        Blue
-        <input type="range" min="0" max="100" value="100" class="slider" id="blueSlide">
-      </div>
-      <br>
-      <div>
         Camera Angle:
-        <input type="range" min="-45" max="180" value="90" class="slider" list="angleMarkers" id="angleSlide">
+        <input type="range" min="-45" max="180" value="45" class="slider" list="angleMarkers" id="angleSlide">
         <datalist id="angleMarkers">
           <option value="-45"></option>
           <option value="0"></option>
@@ -43,6 +21,41 @@
           <option value="90"></option>
           <option value="135"></option>
         </datalist>
+      </div>
+      <br>
+      <div>
+        <p>
+          Head:
+          <input type="range" min="-20" max="20" value="0" class="slider" id="headSlide">
+        </p>
+        <p>
+          Front Body:
+          <input type="range" min="0" max="10" value="0" class="slider" id="frontBodySlide">
+        </p>
+        <p>
+          Back Body:
+          <input type="range" min="0" max="30" value="0" class="slider" id="backBodySlide">
+        </p>
+        <p>
+          Tail:
+          <input type="range" min="-30" max="30" value="0" class="slider" id="tailSlide">
+        </p>
+        <p>
+          Right Front Leg:
+          <input type="range" min="-30" max="30" value="0" class="slider" id="rightFrontSlide">
+        </p>
+        <p>
+          Left Front Leg:
+          <input type="range" min="-30" max="30" value="0" class="slider" id="leftFrontSlide">
+        </p>
+        <p>
+          Right Back Leg:
+          <input type="range" min="-30" max="30" value="0" class="slider" id="rightBackSlide">
+        </p>
+        <p>
+          Left Back Leg:
+          <input type="range" min="-30" max="30" value="0" class="slider" id="leftBackSlide">
+        </p>
       </div>
     </section>
     <br><br>

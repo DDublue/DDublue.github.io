@@ -90,23 +90,30 @@ function connectVariablesToGLSL() {
 // Global related UI variables
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
 let g_selectedSize  = 5.0;
+// Camera
 let g_globalAngle = 0;
+// Body part angles
+let g_headAngle = 0;
+let g_frontBody = 0;
+let g_backBody = 0;
+let g_tail = 0;
+let g_rightFrontAngle = 0;
+let g_leftFrontAngle = 0;
+let g_rightBackAngle = 0;
+let g_leftBackAngle = 0;
 
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
-  // Button Events
-  document.getElementById('clearButton').onclick = function() { g_shapesList = []; renderAllShapes(); };
-  document.getElementById('squButton').onclick   = function() { g_selectedType = POINT; };
-  document.getElementById('triButton').onclick   = function() { g_selectedType = TRIANGLE; };
-  document.getElementById('cirButton').onclick   = function() { g_selectedType = CIRCLE; };
-
-  // Color Slider Events
-  document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100; });
-  document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; });
-  document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; });
-
   // Size and Segment Slider Events
   document.getElementById('angleSlide').addEventListener('mousemove', function() { g_globalAngle = this.value; renderAllShapes(); });
+  document.getElementById('headSlide').addEventListener('mousemove', function() { g_headAngle = this.value; renderAllShapes(); });
+  document.getElementById('frontBodySlide').addEventListener('mousemove', function() { g_frontBody = this.value; renderAllShapes(); });
+  document.getElementById('backBodySlide').addEventListener('mousemove', function() { g_backBody = this.value; renderAllShapes(); });
+  document.getElementById('tailSlide').addEventListener('mousemove', function() { g_tail = this.value; renderAllShapes(); });
+  document.getElementById('rightFrontSlide').addEventListener('mousemove', function() { g_rightFrontAngle = this.value; renderAllShapes(); });
+  document.getElementById('leftFrontSlide').addEventListener('mousemove', function() { g_leftFrontAngle = this.value; renderAllShapes(); });
+  document.getElementById('rightBackSlide').addEventListener('mousemove', function() { g_rightBackAngle = this.value; renderAllShapes(); });
+  document.getElementById('leftBackSlide').addEventListener('mousemove', function() { g_leftBackAngle = this.value; renderAllShapes(); });
 }
 
 function main() {
@@ -143,6 +150,47 @@ function renderAllShapes() {
 
   // Hold all the blocks of wolf in an array
   let wolfBlocks = [];
+  
+  // Body
+  {
+  // Front body
+  let front = new Cube();
+  front.color = [0.9,0.9,0.9,1]; // Light gray 0.9
+  front.matrix.setTranslate(-0.2,-0.2,0); // move base
+  front.matrix.translate(0,0.14,0);
+  front.matrix.rotate(g_frontBody,1,0,0);
+  front.matrix.translate(0,-0.14,0);
+  var frontCoordinatesMat = new Matrix4(front.matrix);
+  front.matrix.scale(0.4,0.4,0.4); // scalar
+  front.matrix.scale(0.8,0.7,0.6);
+  wolfBlocks.push(front);
+  front.render();
+  
+  // Back body
+  let back = new Cube();
+  back.color = [0.87,0.87,0.87,1]; // Light gray 0.87
+  back.matrix.setTranslate(-0.2,-0.2,0); // move base
+  back.matrix = frontCoordinatesMat;
+  back.matrix.translate(0.036,0,0.22);
+  back.matrix.translate(0,0.24,0);
+  back.matrix.rotate(g_backBody,1,0,0);
+  back.matrix.translate(0,-0.24,0);
+  back.matrix.scale(0.4,0.4,0.4); // scalar
+  back.matrix.scale(0.6,0.6,1);
+  wolfBlocks.push(back);
+  back.render();
+  
+  // Tail
+  let tail = new Cube();
+  tail.color = [0.9,0.9,0.9,1]; // Light gray 0.9
+  tail.matrix.setTranslate(-0.2,-0.2,0); // move base
+  tail.matrix.translate(0.115,0.175,0.55);
+  tail.matrix.rotate(45,5,0,0);
+  tail.matrix.scale(0.4,0.4,0.4); // scalar
+  tail.matrix.scale(0.2,0.2,0.8);
+  wolfBlocks.push(tail);
+  tail.render();
+  }
 
   // Head
   {
@@ -151,6 +199,9 @@ function renderAllShapes() {
   head.color = [0.87,0.87,0.87,1]; // light gray 0.87
   head.matrix.setTranslate(-0.2,-0.2,0); // move base
   head.matrix.translate(0.041,0.015,-0.122);
+  head.matrix.translate(0,0.12,0.16);
+  head.matrix.rotate(g_headAngle,1,0,0);
+  head.matrix.translate(0,-0.12,-0.16);
   head.matrix.scale(0.4,0.4,0.4); // scalar
   head.matrix.scale(0.6,0.6,0.4);
   wolfBlocks.push(head);
@@ -258,47 +309,16 @@ function renderAllShapes() {
 
   }
 
-  // Body
-  {
-  // Front body
-  let front = new Cube();
-  front.color = [0.9,0.9,0.9,1]; // Light gray 0.9
-  front.matrix.setTranslate(-0.2,-0.2,0); // move base
-  front.matrix.translate(0,0,0);
-  front.matrix.scale(0.4,0.4,0.4); // scalar
-  front.matrix.scale(0.8,0.7,0.6);
-  wolfBlocks.push(front);
-  front.render();
-  
-  // Back body
-  let back = new Cube();
-  back.color = [0.87,0.87,0.87,1]; // Light gray 0.87
-  back.matrix.setTranslate(-0.2,-0.2,0); // move base
-  back.matrix.translate(0.036,0,0.22);
-  back.matrix.scale(0.4,0.4,0.4); // scalar
-  back.matrix.scale(0.6,0.6,1);
-  wolfBlocks.push(back);
-  back.render();
-
-  // Tail
-  let tail = new Cube();
-  tail.color = [0.9,0.9,0.9,1]; // Light gray 0.9
-  tail.matrix.setTranslate(-0.2,-0.2,0); // move base
-  tail.matrix.translate(0.115,0.175,0.55);
-  tail.matrix.rotate(45,5,0,0);
-  tail.matrix.scale(0.4,0.4,0.4); // scalar
-  tail.matrix.scale(0.2,0.2,0.8);
-  wolfBlocks.push(tail);
-  tail.render();
-  }
-
   // Limbs
   {
   // Right front leg
   let rightFrontLeg = new Cube();
   rightFrontLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   rightFrontLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  rightFrontLeg.matrix.translate(0.055,-0.275,0.03);
+  rightFrontLeg.matrix.translate(0.055,-0.25,0.03);
+  rightFrontLeg.matrix.translate(0,0.4,0.04);
+  rightFrontLeg.matrix.rotate(g_rightFrontAngle,1,0,0);
+  rightFrontLeg.matrix.translate(0,-0.4,-0.04);
   rightFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
   rightFrontLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(rightFrontLeg);
@@ -308,7 +328,10 @@ function renderAllShapes() {
   let leftFrontLeg = new Cube();
   leftFrontLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   leftFrontLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  leftFrontLeg.matrix.translate(0.185,-0.275,0.03);
+  leftFrontLeg.matrix.translate(0.185,-0.25,0.03);
+  leftFrontLeg.matrix.translate(0,0.4,0.04);
+  leftFrontLeg.matrix.rotate(g_leftFrontAngle,1,0,0);
+  leftFrontLeg.matrix.translate(0,-0.4,-0.04);
   leftFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
   leftFrontLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(leftFrontLeg);
@@ -318,7 +341,10 @@ function renderAllShapes() {
   let rightBackLeg = new Cube();
   rightBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   rightBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  rightBackLeg.matrix.translate(0.055,-0.275,0.5);
+  rightBackLeg.matrix.translate(0.055,-0.25,0.5);
+  rightBackLeg.matrix.translate(0,0.4,0.04);
+  rightBackLeg.matrix.rotate(g_rightBackAngle,1,0,0);
+  rightBackLeg.matrix.translate(0,-0.4,-0.04);
   rightBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
   rightBackLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(rightBackLeg);
@@ -328,7 +354,10 @@ function renderAllShapes() {
   let leftBackLeg = new Cube();
   leftBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   leftBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
-  leftBackLeg.matrix.translate(0.185,-0.275,0.5);
+  leftBackLeg.matrix.translate(0.185,-0.25,0.5);
+  leftBackLeg.matrix.translate(0,0.4,0.04);
+  leftBackLeg.matrix.rotate(g_leftBackAngle,1,0,0);
+  leftBackLeg.matrix.translate(0,-0.4,-0.04);
   leftBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
   leftBackLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(leftBackLeg);
@@ -338,7 +367,7 @@ function renderAllShapes() {
   
   // // Scale down and render wolf (ENABLE THIS INSTEAD MAYBE LATER)
   // for (block of wolfBlocks) {
-  //   block.matrix.scale(0.5,0.5,0.5); // 
+  //   block.matrix.scale(0.4,0.4,0.4); // 
   //   block.render();
   // }
 
