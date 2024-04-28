@@ -105,58 +105,77 @@ let g_leftBackAngle = 0;
 // '', 'idleAnimation', 'walkAnimation', 'sitAnimation'
 let g_animationSelect = '';
 
+// Global mouseDown check
+let g_isMouseDown = '';
+// Global shiftKeyHeld check over <canvas>
+let isShiftKeyHeld = false;
+
+// Global HTML elements
+let h_angleSlide = document.getElementById('angleSlide');
+let h_headSlide = document.getElementById('headSlide');
+let h_frontBodySlide = document.getElementById('frontBodySlide');
+let h_backBodySlide = document.getElementById('backBodySlide');
+let h_tailSlide = document.getElementById('tailSlide');
+let h_rightFrontSlide = document.getElementById('rightFrontSlide');
+let h_leftFrontSlide = document.getElementById('leftFrontSlide');
+let h_rightBackSlide = document.getElementById('rightBackSlide');
+let h_leftBackSlide = document.getElementById('leftBackSlide');
+let h_animationSelect = document.getElementById('animationSelect');
+let h_resetButton = document.getElementById('resetAnimationButton');
+
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
   // Angle Slider Events
-  document.getElementById('angleSlide').addEventListener('mousemove',
+  h_angleSlide.addEventListener('input',
     function() {
       g_globalAngle = this.value;
+      console.log(`FROM ACTION: ${g_globalAngle}`);
       renderAllShapes();
     }
   );
-  document.getElementById('headSlide').addEventListener('mousemove',
+  h_headSlide.addEventListener('input',
     function() {
       g_headAngle = this.value;
       renderAllShapes();
     }
   );
-  document.getElementById('frontBodySlide').addEventListener('mousemove',
+  h_frontBodySlide.addEventListener('input',
     function() {
       g_frontBody = this.value;
       renderAllShapes();
     }
   );
-  document.getElementById('backBodySlide').addEventListener('mousemove',
+  h_backBodySlide.addEventListener('input',
     function() {
       g_backBody = this.value;
       renderAllShapes();
     }
   );
-  document.getElementById('tailSlide').addEventListener('mousemove',
+  h_tailSlide.addEventListener('input',
     function() {
       g_tail = this.value;
       renderAllShapes();
     }
   );
-  document.getElementById('rightFrontSlide').addEventListener('mousemove',
+  h_rightFrontSlide.addEventListener('input',
     function() {
       g_rightFrontAngle = this.value;
       renderAllShapes();
     }
   );
-  document.getElementById('leftFrontSlide').addEventListener('mousemove',
+  h_leftFrontSlide.addEventListener('input',
     function() {
       g_leftFrontAngle = this.value;
       renderAllShapes();
     }
   );
-  document.getElementById('rightBackSlide').addEventListener('mousemove',
+  h_rightBackSlide.addEventListener('input',
     function() {
       g_rightBackAngle = this.value;
       renderAllShapes();
     }
   );
-  document.getElementById('leftBackSlide').addEventListener('mousemove',
+  h_leftBackSlide.addEventListener('input',
     function() {
       g_leftBackAngle = this.value;
       renderAllShapes();
@@ -164,11 +183,42 @@ function addActionsForHtmlUI() {
   );
 
   // Select Animation Event
-  document.getElementById('animationSelect').onchange =
-  function() {
+  h_animationSelect.onchange = function() {
     g_animationSelect = this.value;
+    if (g_animationSelect == '') {
+      h_resetButton.style.display = 'inline-block';
+    } else {
+      h_resetButton.style.display = 'none';
+  
+    }
     renderAllShapes();
   };
+
+  // Reset Animation if None
+  h_resetButton.onclick = function() {
+    g_headAngle = 0;
+    g_frontBody = 0;
+    g_backBody = 0;
+    g_tail = 45;
+    g_rightFrontAngle = 0;
+    g_leftFrontAngle = 0;
+    g_rightBackAngle = 0;
+    g_leftBackAngle = 0;
+    renderAllShapes();
+  };
+
+  // Shift check (+click for an animation)
+  document.addEventListener('keyup',
+    function(ev) {
+      isShiftKeyHeld = false;
+    }
+  );
+  document.addEventListener('keydown',
+    function(ev) {
+      isShiftKeyHeld = true;
+    }
+  );
+
 }
 
 function main() {
@@ -181,8 +231,15 @@ function main() {
   // Set up GLSL shader programs and connect GLSL variables
   connectVariablesToGLSL();
 
+  // Do camera movement
+  canvas.onmousedown = handleCamera;
+  canvas.onmousemove = handleCamera;
+
+  // Do shift+click for an animation
+  canvas.onmousedown = shiftClickAnimation;
+
   // Specify the color for clearing <canvas>
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0.3,0.75,0.8, 1.0);
 
   // Clear <canvas>
   // gl.clear(gl.COLOR_BUFFER_BIT);
@@ -197,7 +254,7 @@ let g_seconds = performance.now()/1000.0 - g_startTime;
 function tick() {
   // Save the current time
   g_seconds = performance.now()/1000.0 - g_startTime;
-  console.log(g_seconds); // DEBUG
+  // console.log(g_seconds); // DEBUG
 
   // Update animation angles
   updateAnimationAngles();
@@ -207,6 +264,64 @@ function tick() {
 
   // Tell the browser to update again when it has time
   requestAnimationFrame(tick);
+}
+
+// Globally store previous x and y values
+let g_prevX = 0;
+let g_prevY = 0;
+// From asg1
+function convertCoordinatesEventToGL(ev) {
+  let x = ev.clientX; // x coordinate of a mouse pointer
+  let y = ev.clientY; // y coordinate of a mouse pointer
+  let rect = ev.target.getBoundingClientRect();
+
+  x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
+  y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
+
+  return([x,y]);
+}
+
+// Camera movement
+function handleCamera(ev) {
+  [x,y] = convertCoordinatesEventToGL(ev);
+  if (ev.buttons == 1) {
+    // Fix bug for NaN
+    if (!g_globalAngle) {
+      g_globalAngle = 0;
+    }
+    // Actual calculation
+    g_globalAngle = (g_globalAngle + 200 * (g_prevX - x)) % 359;
+    // Convert negative angles to positive
+    if (g_globalAngle < 0.0) {
+      g_globalAngle = 358.9 - g_globalAngle;
+    }
+    h_angleSlide.value = g_globalAngle;
+  }
+  [g_prevX,g_prevY] = [x,y];
+}
+
+// Shift+click animation
+function shiftClickAnimation(ev) {
+  if (ev.buttons == 1 && isShiftKeyHeld) {
+    switch (g_animationSelect) {
+      case '':
+        g_animationSelect = 'sitAnimation';
+        h_animationSelect.value = 'sitAnimation';
+        break;
+      case 'idleAnimation':
+        g_animationSelect = 'walkAnimation';
+        h_animationSelect.value = 'walkAnimation';
+        break;
+      case 'walkAnimation':
+        g_animationSelect = 'sitAnimation';
+        h_animationSelect.value = 'sitAnimation';
+        break;
+      case 'sitAnimation':
+        g_animationSelect = 'idleAnimation';
+        h_animationSelect.value = 'idleAnimation';
+        break;
+    }
+  }
 }
 
 // Update the angles of everything if currently animated
@@ -231,7 +346,7 @@ function updateAnimationAngles() {
     g_leftBackAngle   = -30*Math.sin(g_seconds*10);
   } else if (g_animationSelect === 'sitAnimation') {
     g_headAngle = 0.25*Math.sin(g_seconds*1);
-    g_frontBody = -0.5*Math.sin(g_seconds*1)+15;
+    g_frontBody = -0.5*Math.sin(g_seconds*1)+20;
     g_backBody  = 0.5*Math.sin(g_seconds*1)+30;
     g_tail      = 5*Math.sin(g_seconds*7)-75;
     g_rightFrontAngle = 0.25*Math.sin(g_seconds*1)+0;
@@ -239,6 +354,14 @@ function updateAnimationAngles() {
     g_rightBackAngle  = 0.25*Math.sin(g_seconds*1)-30;
     g_leftBackAngle   = -0.25*Math.sin(g_seconds*1)-30;
   }
+  h_headSlide.value       = g_headAngle;
+  h_frontBodySlide.value  = g_frontBody;
+  h_backBodySlide.value   = g_backBody;
+  h_tailSlide.value       = g_tail;
+  h_rightFrontSlide.value = g_rightFrontAngle;
+  h_leftFrontSlide.value  = g_leftFrontAngle;
+  h_rightBackSlide.value  = g_rightBackAngle;
+  h_leftBackSlide.value   = g_leftBackAngle;
 }
 
 // Draw every shape that is supposed to be in the canvas
@@ -265,25 +388,12 @@ function renderAllShapes() {
     front.color = [0.9,0.9,0.9,1]; // Light gray 0.9
     front.matrix.setTranslate(-0.2,-0.2,0); // move base
     front.matrix.translate(0,0.14,0);
-    
     front.matrix.rotate(g_frontBody,1,0,0);
-
-    // if (!g_animationSelect) {
-    //   front.matrix.rotate(g_frontBody,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   front.matrix.rotate(-0.5*Math.sin(g_seconds*2),1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
-
     front.matrix.translate(0,-0.14,0);
     var frontCoordinatesMat = new Matrix4(front.matrix);
     front.matrix.scale(0.4,0.4,0.4); // scalar
     front.matrix.scale(0.8,0.7,0.6);
     wolfBlocks.push(front);
-    front.render();
     
     // Back body
     let back = new Cube();
@@ -292,25 +402,12 @@ function renderAllShapes() {
     back.matrix = new Matrix4(frontCoordinatesMat);
     back.matrix.translate(0.036,0,0.22);
     back.matrix.translate(0,0.24,0);
-
     back.matrix.rotate(g_backBody,1,0,0);
-
-    // if (!g_animationSelect) {
-    //   back.matrix.rotate(g_backBody,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   back.matrix.rotate(0.5*Math.sin(g_seconds*2)+0.5,1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
-
     back.matrix.translate(0,-0.24,0);
     var backCoordinatesMat = new Matrix4(back.matrix);
     back.matrix.scale(0.4,0.4,0.4); // scalar
     back.matrix.scale(0.6,0.6,1);
     wolfBlocks.push(back);
-    back.render();
     
     // Tail
     let tail = new Cube();
@@ -319,24 +416,11 @@ function renderAllShapes() {
     tail.matrix = new Matrix4(backCoordinatesMat);
     tail.matrix.translate(0.085,0.15,0.37);
     tail.matrix.translate(0,0.04,0.01);
-
     tail.matrix.rotate(g_tail,1,0,0);
-
-    // if (!g_animationSelect) {
-    //   tail.matrix.rotate(g_tail,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   tail.matrix.rotate(2*Math.sin(g_seconds*10)+28,1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
-
     tail.matrix.translate(0,-0.04,-0.01);
     tail.matrix.scale(0.4,0.4,0.4); // scalar
     tail.matrix.scale(0.2,0.2,0.8);
     wolfBlocks.push(tail);
-    tail.render();
     }
   
     // Head
@@ -359,29 +443,19 @@ function renderAllShapes() {
       head.matrix.rotate(-g_headAngle,1,0,0);
     } else if (g_animationSelect === 'sitAnimation') {
       if (g_seconds % 10 < 3) {
-        head.matrix.rotate(-g_headAngle+15,0,0,1);
+        head.matrix.rotate(-g_headAngle-15,0,0,1);
       } else {
         head.matrix.rotate(-g_headAngle,0,0,1);
       }
     } else {
       head.matrix.rotate(-g_headAngle,1,0,0);
     }
-    // if (!g_animationSelect) {
-    //   head.matrix.rotate(-g_headAngle,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-      
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   head.matrix.rotate(0.25*Math.sin(g_seconds*-10),1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
 
     head.matrix.translate(-0.12,-0.12,-0.16);
     var headCoordinatesMat = new Matrix4(head.matrix);
     head.matrix.scale(0.4,0.4,0.4); // scalar
     head.matrix.scale(0.6,0.6,0.3);
     wolfBlocks.push(head);
-    // head.render();
     
     // Lower head
     let lowerHead = new Cube();
@@ -392,8 +466,17 @@ function renderAllShapes() {
     lowerHead.matrix.scale(0.4,0.4,0.4); // scalar
     lowerHead.matrix.scale(0.3,0.3,0.15);
     wolfBlocks.push(lowerHead);
-    // lowerHead.render();
   
+    // Hat
+    let hat = new Pyramid();
+    hat.color = [0.65,0.3,0.2,1]; // red
+    hat.matrix.setTranslate(-0.2,-0.2,0); // move base
+    hat.matrix = new Matrix4(headCoordinatesMat);
+    hat.matrix.translate(0.02,0.24,-0.05);
+    hat.matrix.scale(0.4,0.4,0.4); // scalar
+    hat.matrix.scale(0.5,0.8,0.5);
+    wolfBlocks.push(hat);
+
     // Upper mouth
     let upperMouth = new Cube();
     upperMouth.color = [0.85,0.73,0.6,1]; // light light brownish
@@ -403,7 +486,6 @@ function renderAllShapes() {
     upperMouth.matrix.scale(0.4,0.4,0.4); // scalar
     upperMouth.matrix.scale(0.3,0.2,0.4);
     wolfBlocks.push(upperMouth);
-    // upperMouth.render();
   
     // Lower mouth
     let lowerMouth = new Cube();
@@ -414,18 +496,16 @@ function renderAllShapes() {
     lowerMouth.matrix.scale(0.4,0.4,0.4); // scalar
     lowerMouth.matrix.scale(0.3,0.1,0.4);
     wolfBlocks.push(lowerMouth);
-    // lowerMouth.render();
     
     // Nose
     let nose = new Cube();
     nose.color = [0.1,0.1,0.1,1]; // light black
     nose.matrix.setTranslate(-0.2,-0.2,0); // move base
     nose.matrix = new Matrix4(headCoordinatesMat);
-    nose.matrix.translate(0.1,0.081,-0.141);
+    nose.matrix.translate(0.1,0.085,-0.141);
     nose.matrix.scale(0.4,0.4,0.4); // scalar
     nose.matrix.scale(0.1,0.1,0.1);
     wolfBlocks.push(nose);
-    // nose.render();
     
     // Right eye
     let rightEye = new Cube();
@@ -436,7 +516,6 @@ function renderAllShapes() {
     rightEye.matrix.scale(0.4,0.4,0.4); // scalar
     rightEye.matrix.scale(0.2,0.1,0.1);
     wolfBlocks.push(rightEye);
-    // rightEye.render();
   
     // Right pupil
     let rightPupil = new Cube();
@@ -447,7 +526,6 @@ function renderAllShapes() {
     rightPupil.matrix.scale(0.4,0.4,0.4); // scalar
     rightPupil.matrix.scale(0.11,0.11,0.11);
     wolfBlocks.push(rightPupil);
-    // rightPupil.render();
     
     // Left eye
     let leftEye = new Cube();
@@ -458,7 +536,6 @@ function renderAllShapes() {
     leftEye.matrix.scale(0.4,0.4,0.4); // scalar
     leftEye.matrix.scale(0.2,0.1,0.1);
     wolfBlocks.push(leftEye);
-    // leftEye.render();
   
     // Left pupil
     let leftPupil = new Cube();
@@ -469,7 +546,6 @@ function renderAllShapes() {
     leftPupil.matrix.scale(0.4,0.4,0.4); // scalar
     leftPupil.matrix.scale(0.11,0.11,0.11);
     wolfBlocks.push(leftPupil);
-    // leftPupil.render();
   
     // Right ear
     let rightEar = new Cube();
@@ -480,7 +556,6 @@ function renderAllShapes() {
     rightEar.matrix.scale(0.4,0.4,0.4); // scalar
     rightEar.matrix.scale(0.2,0.3,0.1);
     wolfBlocks.push(rightEar);
-    // rightEar.render();
   
     // Left ear
     let leftEar = new Cube();
@@ -491,8 +566,6 @@ function renderAllShapes() {
     leftEar.matrix.scale(0.4,0.4,0.4); // scalar
     leftEar.matrix.scale(0.2,0.3,0.1);
     wolfBlocks.push(leftEar);
-    // leftEar.render();
-  
     }
   
     // Limbs
@@ -504,24 +577,11 @@ function renderAllShapes() {
     rightFrontLeg.matrix = new Matrix4(frontCoordinatesMat);
     rightFrontLeg.matrix.translate(0.055,-0.30,0.03);
     rightFrontLeg.matrix.translate(0,0.4,0.04);
-    
     rightFrontLeg.matrix.rotate(-g_rightFrontAngle,1,0,0);
-
-    // if (!g_animationSelect) {
-    //   // rightFrontLeg.matrix.rotate(-g_rightFrontAngle,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   rightFrontLeg.matrix.rotate(30*Math.sin(g_seconds*10),1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
-
     rightFrontLeg.matrix.translate(0,-0.4,-0.04);
     rightFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
     rightFrontLeg.matrix.scale(0.2,0.8,0.2);
     wolfBlocks.push(rightFrontLeg);
-    // rightFrontLeg.render();
     
     // Left front leg
     let leftFrontLeg = new Cube();
@@ -529,26 +589,12 @@ function renderAllShapes() {
     leftFrontLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
     leftFrontLeg.matrix = new Matrix4(frontCoordinatesMat);
     leftFrontLeg.matrix.translate(0.185,-0.30,0.03);
-
     leftFrontLeg.matrix.translate(0,0.4,0.04);
-
     leftFrontLeg.matrix.rotate(-g_leftFrontAngle,1,0,0);
-    
-    // if (!g_animationSelect) {
-    //   leftFrontLeg.matrix.rotate(-g_leftFrontAngle,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   leftFrontLeg.matrix.rotate(-30*Math.sin(g_seconds*10),1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
-
     leftFrontLeg.matrix.translate(0,-0.4,-0.04);
     leftFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
     leftFrontLeg.matrix.scale(0.2,0.8,0.2);
     wolfBlocks.push(leftFrontLeg);
-    // leftFrontLeg.render();
     
     // Right back leg
     let rightBackLeg = new Cube();
@@ -557,24 +603,11 @@ function renderAllShapes() {
     rightBackLeg.matrix = new Matrix4(backCoordinatesMat);
     rightBackLeg.matrix.translate(0.02,-0.3,0.29);
     rightBackLeg.matrix.translate(0,0.4,0.04);
-
     rightBackLeg.matrix.rotate(-g_rightBackAngle,1,0,0);
-    
-    // if (!g_animationSelect) {
-    //   rightBackLeg.matrix.rotate(-g_rightBackAngle,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   rightBackLeg.matrix.rotate(30*Math.sin(g_seconds*10),1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
-
     rightBackLeg.matrix.translate(0,-0.4,-0.04);
     rightBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
     rightBackLeg.matrix.scale(0.2,0.8,0.2);
     wolfBlocks.push(rightBackLeg);
-    // rightBackLeg.render();
     
     // Left back leg
     let leftBackLeg = new Cube();
@@ -583,25 +616,11 @@ function renderAllShapes() {
     leftBackLeg.matrix = new Matrix4(backCoordinatesMat);
     leftBackLeg.matrix.translate(0.15,-0.30,0.29);
     leftBackLeg.matrix.translate(0,0.4,0.04);
-
     leftBackLeg.matrix.rotate(-g_leftBackAngle,1,0,0);
-
-    // if (!g_animationSelect) {
-    //   leftBackLeg.matrix.rotate(-g_leftBackAngle,1,0,0);
-    // } else if (g_animationSelect === 'idleAnimation') {
-
-    // } else if (g_animationSelect === 'walkAnimation') {
-    //   leftBackLeg.matrix.rotate(-30*Math.sin(g_seconds*10),1,0,0);
-    // } else if (g_animationSelect === 'sitAnimation') {
-
-    // }
-
     leftBackLeg.matrix.translate(0,-0.4,-0.04);
     leftBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
     leftBackLeg.matrix.scale(0.2,0.8,0.2);
     wolfBlocks.push(leftBackLeg);
-    // leftBackLeg.render();
-    
     }
     
     // Scale down and render wolf (ENABLE THIS INSTEAD MAYBE LATER)

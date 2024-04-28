@@ -13,14 +13,7 @@
     <section>
       <div>
         Camera Angle:
-        <input type="range" min="-45" max="180" value="45" class="slider" list="angleMarkers" id="angleSlide">
-        <datalist id="angleMarkers">
-          <option value="-45"></option>
-          <option value="0"></option>
-          <option value="45"></option>
-          <option value="90"></option>
-          <option value="135"></option>
-        </datalist>
+        <input type="range" min="0" max="359" value="45" class="slider" id="angleSlide">
       </div>
       <br>
       <div>
@@ -32,6 +25,7 @@
           <option value="walkAnimation">Walking</option>
           <option value="sitAnimation">Sitting</option>
         </select>
+        <button type="button" id="resetAnimationButton" style="display:inline-block">Reset</button>
       </div>
       <div>
         <p>
@@ -48,7 +42,7 @@
         </p>
         <p>
           Tail:
-          <input type="range" min="-60" max="45" value="45" class="slider" id="tailSlide">
+          <input type="range" min="-180" max="180" value="45" class="slider" id="tailSlide">
         </p>
         <p>
           Right Front Leg:
@@ -82,6 +76,7 @@
     <script src="Triangle.js"></script>
     <script src="Circle.js"></script>
     <script src="Cube.js"></script>
+    <script src="Pyramid.js"></script>
     <script src="Point.js"></script>
     <script src="asg2.js"></script>
   </body>
