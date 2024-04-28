@@ -210,7 +210,7 @@ function renderAllShapes() {
   head.matrix.scale(0.4,0.4,0.4); // scalar
   head.matrix.scale(0.6,0.6,0.3);
   wolfBlocks.push(head);
-  head.render();
+  // head.render();
   
   // Lower head
   let lowerHead = new Cube();
@@ -221,7 +221,7 @@ function renderAllShapes() {
   lowerHead.matrix.scale(0.4,0.4,0.4); // scalar
   lowerHead.matrix.scale(0.3,0.3,0.15);
   wolfBlocks.push(lowerHead);
-  lowerHead.render();
+  // lowerHead.render();
 
   // Upper mouth
   let upperMouth = new Cube();
@@ -232,7 +232,7 @@ function renderAllShapes() {
   upperMouth.matrix.scale(0.4,0.4,0.4); // scalar
   upperMouth.matrix.scale(0.3,0.2,0.4);
   wolfBlocks.push(upperMouth);
-  upperMouth.render();
+  // upperMouth.render();
 
   // Lower mouth
   let lowerMouth = new Cube();
@@ -243,7 +243,7 @@ function renderAllShapes() {
   lowerMouth.matrix.scale(0.4,0.4,0.4); // scalar
   lowerMouth.matrix.scale(0.3,0.1,0.4);
   wolfBlocks.push(lowerMouth);
-  lowerMouth.render();
+  // lowerMouth.render();
   
   // Nose
   let nose = new Cube();
@@ -254,7 +254,7 @@ function renderAllShapes() {
   nose.matrix.scale(0.4,0.4,0.4); // scalar
   nose.matrix.scale(0.1,0.1,0.1);
   wolfBlocks.push(nose);
-  nose.render();
+  // nose.render();
   
   // Right eye
   let rightEye = new Cube();
@@ -265,7 +265,7 @@ function renderAllShapes() {
   rightEye.matrix.scale(0.4,0.4,0.4); // scalar
   rightEye.matrix.scale(0.2,0.1,0.1);
   wolfBlocks.push(rightEye);
-  rightEye.render();
+  // rightEye.render();
 
   // Right pupil
   let rightPupil = new Cube();
@@ -276,7 +276,7 @@ function renderAllShapes() {
   rightPupil.matrix.scale(0.4,0.4,0.4); // scalar
   rightPupil.matrix.scale(0.11,0.11,0.11);
   wolfBlocks.push(rightPupil);
-  rightPupil.render();
+  // rightPupil.render();
   
   // Left eye
   let leftEye = new Cube();
@@ -287,7 +287,7 @@ function renderAllShapes() {
   leftEye.matrix.scale(0.4,0.4,0.4); // scalar
   leftEye.matrix.scale(0.2,0.1,0.1);
   wolfBlocks.push(leftEye);
-  leftEye.render();
+  // leftEye.render();
 
   // Left pupil
   let leftPupil = new Cube();
@@ -298,7 +298,7 @@ function renderAllShapes() {
   leftPupil.matrix.scale(0.4,0.4,0.4); // scalar
   leftPupil.matrix.scale(0.11,0.11,0.11);
   wolfBlocks.push(leftPupil);
-  leftPupil.render();
+  // leftPupil.render();
 
   // Right ear
   let rightEar = new Cube();
@@ -309,7 +309,7 @@ function renderAllShapes() {
   rightEar.matrix.scale(0.4,0.4,0.4); // scalar
   rightEar.matrix.scale(0.2,0.3,0.1);
   wolfBlocks.push(rightEar);
-  rightEar.render();
+  // rightEar.render();
 
   // Left ear
   let leftEar = new Cube();
@@ -320,7 +320,7 @@ function renderAllShapes() {
   leftEar.matrix.scale(0.4,0.4,0.4); // scalar
   leftEar.matrix.scale(0.2,0.3,0.1);
   wolfBlocks.push(leftEar);
-  leftEar.render();
+  // leftEar.render();
 
   }
 
@@ -333,12 +333,12 @@ function renderAllShapes() {
   rightFrontLeg.matrix = new Matrix4(frontCoordinatesMat);
   rightFrontLeg.matrix.translate(0.055,-0.30,0.03);
   rightFrontLeg.matrix.translate(0,0.4,0.04);
-  rightFrontLeg.matrix.rotate(g_rightFrontAngle,1,0,0);
+  rightFrontLeg.matrix.rotate(-g_rightFrontAngle,1,0,0);
   rightFrontLeg.matrix.translate(0,-0.4,-0.04);
   rightFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
   rightFrontLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(rightFrontLeg);
-  rightFrontLeg.render();
+  // rightFrontLeg.render();
   
   // Left front leg
   let leftFrontLeg = new Cube();
@@ -347,48 +347,47 @@ function renderAllShapes() {
   leftFrontLeg.matrix = new Matrix4(frontCoordinatesMat);
   leftFrontLeg.matrix.translate(0.185,-0.30,0.03);
   leftFrontLeg.matrix.translate(0,0.4,0.04);
-  leftFrontLeg.matrix.rotate(g_leftFrontAngle,1,0,0);
+  leftFrontLeg.matrix.rotate(-g_leftFrontAngle,1,0,0);
   leftFrontLeg.matrix.translate(0,-0.4,-0.04);
   leftFrontLeg.matrix.scale(0.4,0.4,0.4); // scalar
   leftFrontLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(leftFrontLeg);
-  leftFrontLeg.render();
+  // leftFrontLeg.render();
   
   // Right back leg
   let rightBackLeg = new Cube();
   rightBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   rightBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
   rightBackLeg.matrix = new Matrix4(backCoordinatesMat);
-  rightBackLeg.matrix.translate(0.02,-0.3,0.3);
+  rightBackLeg.matrix.translate(0.02,-0.3,0.29);
   rightBackLeg.matrix.translate(0,0.4,0.04);
-  rightBackLeg.matrix.rotate(g_rightBackAngle,1,0,0);
+  rightBackLeg.matrix.rotate(-g_rightBackAngle,1,0,0);
   rightBackLeg.matrix.translate(0,-0.4,-0.04);
   rightBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
   rightBackLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(rightBackLeg);
-  rightBackLeg.render();
+  // rightBackLeg.render();
   
   // Left back leg
   let leftBackLeg = new Cube();
   leftBackLeg.color = [0.85,0.85,0.85,1] // light gray 0.85
   leftBackLeg.matrix.setTranslate(-0.2,-0.2,0); // move base
   leftBackLeg.matrix = new Matrix4(backCoordinatesMat);
-  leftBackLeg.matrix.translate(0.15,-0.30,0.3);
+  leftBackLeg.matrix.translate(0.15,-0.30,0.29);
   leftBackLeg.matrix.translate(0,0.4,0.04);
-  leftBackLeg.matrix.rotate(g_leftBackAngle,1,0,0);
+  leftBackLeg.matrix.rotate(-g_leftBackAngle,1,0,0);
   leftBackLeg.matrix.translate(0,-0.4,-0.04);
   leftBackLeg.matrix.scale(0.4,0.4,0.4); // scalar
   leftBackLeg.matrix.scale(0.2,0.8,0.2);
   wolfBlocks.push(leftBackLeg);
-  leftBackLeg.render();
+  // leftBackLeg.render();
   
   }
   
-  // // Scale down and render wolf (ENABLE THIS INSTEAD MAYBE LATER)
-  // for (block of wolfBlocks) {
-  //   block.matrix.scale(0.4,0.4,0.4); // 
-  //   block.render();
-  // }
+  // Scale down and render wolf (ENABLE THIS INSTEAD MAYBE LATER)
+  for (block of wolfBlocks) {
+    block.render();
+  }
 
 
 }
