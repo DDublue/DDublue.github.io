@@ -7,11 +7,15 @@ class Cube {
       this.type = 'cube';
       this.color = color;
       this.matrix = new Matrix4();
+      this.textureNum = -1;
   }
 
   // Render shape
   render() {
       var rgba = this.color;
+
+      // Pass the texture number
+      gl.uniform1i(u_whichTexture, this.textureNum);
   
       // Pass the color of a point to u_FragColor variable
       gl.uniform4f(u_FragColor, rgba[0]*0.95, rgba[1]*0.95, rgba[2]*0.95, rgba[3]);
