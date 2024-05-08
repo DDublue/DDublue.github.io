@@ -11,7 +11,6 @@ uniform mat4 u_GlobalRotateMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
 void main() {
-    // gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     v_UV = a_UV;
   }`
@@ -251,6 +250,8 @@ function main() {
   // Set up actions for the HTML UI elements
   addActionsForHtmlUI();
 
+  document.onkeydown = keydown;
+
   initTextures();
 
   // Specify the color for clearing <canvas>
@@ -286,6 +287,35 @@ function updateAnimationAngles() {
 
 }
 
+let camera = new Camera(); 
+
+function keydown(ev) {
+
+  if (ev.keyCode == 68) { // D
+    camera.right();
+  } else
+  if (ev.keyCode == 65) { // A
+    camera.left();
+  };
+
+  if (ev.keyCode == 87) { // W
+    camera.forward();
+  } else
+  if (ev.keyCode == 83) { // S
+    camera.back();
+  };
+
+  if (ev.keyCode == 81) { // Q
+    camera.panLeft();
+  } else
+  if (ev.keyCode == 69) { // E
+    camera.panRight();
+  }
+
+  renderAllShapes();
+  console.log(ev.keyCode);
+}
+
 // Draw every shape that is supposed to be in the canvas
 function renderAllShapes() {
 
@@ -294,12 +324,15 @@ function renderAllShapes() {
 
   // Pass the projection matrix
   let projMat = new Matrix4();
-  projMat.setPerspective(90, canvas.width/canvas.height, 0.1, 100);
+  projMat.setPerspective(camera.fov, canvas.width/canvas.height, 1, 100);
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
   // Pass the view matrix
   let viewMat = new Matrix4();
-  viewMat.setLookAt(0,0,-1,   0,0,0,   0,1,0); // (eye, at, up)
+  viewMat.setLookAt(
+    camera.eye.elements[0],camera.eye.elements[1],camera.eye.elements[2],
+    camera.at.elements[0], camera.at.elements[1], camera.at.elements[2],
+    camera.up.elements[0], camera.up.elements[1], camera.up.elements[2]);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
   // Pass matrix to u_ModelMatrix attribute
