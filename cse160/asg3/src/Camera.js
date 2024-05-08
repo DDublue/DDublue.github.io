@@ -53,7 +53,7 @@ class Camera {
     f.set(this.at);
     f.sub(this.eye);
     let rotMat = new Matrix4();
-    rotMat.setRotate(10, this.up.elements[0],
+    rotMat.setRotate(5, this.up.elements[0],
                         this.up.elements[1],
                         this.up.elements[2]);
     f = rotMat.multiplyVector3(f);
@@ -68,7 +68,7 @@ class Camera {
     f.set(this.at);
     f.sub(this.eye);
     let rotMat = new Matrix4();
-    rotMat.setRotate(-1*10, this.up.elements[0],
+    rotMat.setRotate(-1*5, this.up.elements[0],
                         this.up.elements[1],
                         this.up.elements[2]);
     f = rotMat.multiplyVector3(f);
