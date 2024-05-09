@@ -250,7 +250,13 @@ function main() {
   // Set up actions for the HTML UI elements
   addActionsForHtmlUI();
 
+  // Check keydowns
   document.onkeydown = keydown;
+
+  // Do camera movement
+  canvas.onmousedown = onMove;
+  canvas.onmousemove = onMove;
+
 
   initTextures();
 
@@ -272,19 +278,11 @@ function tick() {
   g_seconds = performance.now()/1000.0 - g_startTime;
   // console.log(g_seconds); // DEBUG
 
-  // Update animation angles
-  updateAnimationAngles();
-
   // Draw everything
   renderAllShapes();
 
   // Tell the browser to update again when it has time
   requestAnimationFrame(tick);
-}
-
-// Update the angles of everything if currently animated
-function updateAnimationAngles() {
-
 }
 
 let camera = new Camera(); 
@@ -327,19 +325,50 @@ let map = [
 function drawMap() {
   for (let x=0; x<32; x++) {
     for (let y=0; y<32; y++) {
-      if (map[x][y] == 1) {
-        let body = new Cube();
-        body.color = WHITE;
-        body.textureNum = -2;
-        body.matrix.translate(0, -0.75, 0);
-        body.matrix.scale(0.5, 0.5, 0.5);
-        body.matrix.translate(x-16, 0, y-16);
-        body.render();
+      for (let z=0; z<2; z++) {
+        if (map[x][y] == 1) {
+          let body = new Cube();
+          body.color = WHITE;
+          body.textureNum = -2+z;
+          body.matrix.translate(0, -0.75+z*0.5, 0);
+          body.matrix.scale(0.5, 0.5, 0.5);
+          body.matrix.translate(x-16, 0, y-16);
+          body.render();
+        }
       }
     }
   }
 }
 
+// Globally store previous x and y values
+let g_prevX = 0;
+let g_prevY = 0;
+// From asg1
+function convertCoordinatesEventToGL(ev) {
+  let x = ev.clientX; // x coordinate of a mouse pointer
+  let y = ev.clientY; // y coordinate of a mouse pointer
+  let rect = ev.target.getBoundingClientRect();
+
+  x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
+  y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
+
+  return([x,y]);
+}
+
+// Camera movement
+function onMove(ev) {
+  [x,y] = convertCoordinatesEventToGL(ev);
+  if (ev.buttons == 1) {
+    // Actual calculation
+    if (x > g_prevX) {
+      camera.panRight(5);
+    } else
+    if (x < g_prevX) {
+      camera.panLeft(5);
+    }
+  }
+  [g_prevX,g_prevY] = [x,y];
+}
 function keydown(ev) {
 
   if (ev.keyCode == 68) { // D
