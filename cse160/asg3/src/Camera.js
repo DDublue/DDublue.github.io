@@ -1,6 +1,6 @@
 class Camera {
   constructor() {
-    this.fov = 60;
+    this.fov = 45;
     this.eye = new Vector3([0,0,0]);
     this.at = new Vector3([0,0,-1]);
     this.up = new Vector3([0,1,0]);
@@ -11,7 +11,7 @@ class Camera {
     f.set(this.at);
     f.sub(this.eye);
     f.normalize();
-    f.mul(1);
+    f.mul(0.5);
     this.eye.add(f);
     this.at.add(f);
   }
@@ -21,7 +21,7 @@ class Camera {
     f.set(this.eye);
     f.sub(this.at);
     f.normalize();
-    f.mul(1);
+    f.mul(0.5);
     this.eye.add(f);
     this.at.add(f);
   }
@@ -32,7 +32,7 @@ class Camera {
     f.sub(this.eye);
     let s = Vector3.cross(this.up, f);
     s.normalize();
-    s.mul(1);
+    s.mul(0.5);
     this.eye.add(s);
     this.at.add(s);
   }
@@ -43,7 +43,7 @@ class Camera {
     f.sub(this.eye);
     let s = Vector3.cross(f, this.up);
     s.normalize();
-    s.mul(1);
+    s.mul(0.5);
     this.eye.add(s);
     this.at.add(s);
   }

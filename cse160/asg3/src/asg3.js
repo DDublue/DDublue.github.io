@@ -325,7 +325,7 @@ let map = [
 function drawMap() {
   for (let x=0; x<32; x++) {
     for (let y=0; y<32; y++) {
-      for (let z=0; z<1; z++) {
+      for (let z=0; z<2; z++) {
         if (map[x][y] == 1) {
           let body = new Cube();
           body.color = WHITE;
@@ -333,7 +333,7 @@ function drawMap() {
           body.matrix.translate(0, -0.75+z*0.5, 0);
           body.matrix.scale(0.5, 0.5, 0.5);
           body.matrix.translate(x-16, 0, y-16);
-          body.render();
+          body.renderfast();
         }
       }
     }
@@ -460,7 +460,7 @@ function renderAllShapes() {
   cubeList.push(floor);
 
   for (cube of cubeList) {
-    cube.render();
+    cube.renderfast();
   }
 
   drawMap();
