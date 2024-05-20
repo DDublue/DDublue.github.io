@@ -127,15 +127,24 @@ function main() {
     mtlLoader.load('../assets/snow_terrain/SnowTerrain.mtl', (mtl) => {
       mtl.preload();
       const objLoader = new OBJLoader();
-      objLoader.setMaterials(mtl);
-      objLoader.load('../assets/snow_terrain/SnowTerrain.obj', (root) => {
-        root.scale.set(0.5,0.5,0.5);
-        root.position.set(0,-1, -4);
-        scene.add(root);
-      })
-    });
+        objLoader.setMaterials(mtl);
+        objLoader.load('../assets/snow_terrain/SnowTerrain.obj', (root) => {
+          root.scale.set(0.5,0.5,0.5);
+          root.position.set(0,-1, -4);
+          scene.add(root);
+        })
+      });
   }
 
+  // 3d model: trees
+  for (let i=-2; i < 3; i++) {
+    makeTree(i*5,-1+Math.cos(i-1),-15);
+    makeTree(i*5,-1,-10);
+    makeTree(i*5,-1,2);
+    makeTree(i*5,-1,7);
+  }
+  
+  
   // --- FUNCTIONS ---
 
   // Render animation of meshes
@@ -178,6 +187,21 @@ function main() {
     cube.position.z = z;
 
     return cube;
+  }
+
+  // Make a tree
+  function makeTree(x=0, y=0, z=0) {
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load('../assets/tree2/Tree.mtl', (mtl) => {
+      mtl.preload();
+      const objLoader = new OBJLoader();
+      objLoader.setMaterials(mtl);
+      objLoader.load('../assets/tree2/Tree.obj', (root) => {
+        root.scale.set(1,1,1);
+        root.position.set(x, y, z);
+        scene.add(root);
+      })
+    });
   }
 
 }
