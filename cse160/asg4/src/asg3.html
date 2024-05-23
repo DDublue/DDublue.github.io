@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Asgn3: 3D World</title>
+  </head>
+
+  <body onload="main()">
+    <canvas id="webgl" width="800" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <section>
+      <div id="performance">
+        ms: fps:
+      </div>
+      <p>-</p>
+      <div>
+        Camera Angle:
+        <input type="range" min="0" max="359" value="45" class="slider" id="angleSlide">
+      </div>
+    </section>
+    <br><br>
+    <br><br>
+    <p>David Wu</p>
+    <p>darwu@ucsc.edu</p>
+    <p>
+      Notes to Grader:
+      <ol>
+        3A
+        <li>'Dirt' ground and 'sky' sky.</li>
+        <li>2 textures working.</li>
+        <li>4 'objects' with texture or color.</li>
+        <li>Dirt and sky texture (2 total).</li>
+        <br>
+        3B
+        <li>Camera movement WASD.</li>
+        <li>Camera rotation/panning QE.</li>
+        <li>Camera has perspective.</li>
+        <li>Can walk in the world and is interesting (maze).</li>
+        <li>Camera rotatable using mouse (hold left mouse button and rotate).</li>
+        <li><i>No add/delete block feature implemented yet</i></li>
+        <li>Game is a maze.</li>
+        <li>Performance: FPS stays >10.</li>
+        <li>Wow factor: maze.</li>
+      </ol>
+    </p>
+    
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix-cse160.js"></script>
+    <script src="Color.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Circle.js"></script>
+    <script src="Cube.js"></script>
+    <script src="Pyramid.js"></script>
+    <script src="Point.js"></script>
+    <script src="Camera.js"></script>
+    <script src="asg3.js"></script>
+  </body>
+</html>
