@@ -404,7 +404,7 @@ function renderAllShapes() {
 
   // Pass the projection matrix
   let projMat = new Matrix4();
-  projMat.setPerspective(camera.fov, canvas.width/canvas.height, 1, 100);
+  projMat.setPerspective(camera.fov, canvas.width/canvas.height, 0.1, 100);
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
   // Pass the view matrix
@@ -459,11 +459,20 @@ function renderAllShapes() {
   floor.matrix.translate(-0.5, 0, -0.5);
   cubeList.push(floor);
 
+  // Stuck in a cube
+  let box = new Cube();
+  box.color = [1.0,0,0,1];
+  box.textureNum = -2;
+  box.matrix.translate(0,0,0);
+  box.matrix.scale(5,5,5);
+  box.matrix.translate(-0.5,-0.2,-0.5);
+  cubeList.push(box);
+
   for (cube of cubeList) {
-    cube.renderfast();
+    cube.render();
   }
 
-  drawMap();
+  // drawMap();
 
   // Performance
   let duration = performance.now() - startTime;
