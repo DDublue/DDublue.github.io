@@ -5,7 +5,9 @@ var VSHADER_SOURCE = `
 precision mediump float;
 attribute vec4 a_Position;
 attribute vec2 a_UV;
+attribute vec3 a_Normal;
 varying vec2 v_UV;
+varying vec3 v_Normal;
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_GlobalRotateMatrix;
 uniform mat4 u_ViewMatrix;
@@ -13,18 +15,23 @@ uniform mat4 u_ProjectionMatrix;
 void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     v_UV = a_UV;
+    v_Normal = a_Normal;
   }`
 
 // Fragment shader program
 var FSHADER_SOURCE = `
   precision mediump float;
   varying vec2 v_UV;
+  varying vec3 v_Normal;
   uniform vec4 u_FragColor;
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
   uniform int u_whichTexture;
   void main() {
-    if (u_whichTexture == -2) {                    // Use color
+    if (u_whichTexture == -3) {
+      gl_FragColor = vec4((v_Normal + 1.0)/2.0, 1.0);   // Use normal
+    }
+    else if (u_whichTexture == -2) {                    // Use color
       gl_FragColor = u_FragColor;
 
     } else if (u_whichTexture == -1) {             // Use UV debug color
@@ -47,6 +54,7 @@ let canvas;
 let gl;
 let a_Position;
 let a_UV;
+let a_Normal;
 let u_FragColor;
 let u_Size;
 let u_ModelMatrix;
@@ -88,6 +96,13 @@ function connectVariablesToGLSL() {
   a_UV = gl.getAttribLocation(gl.program, 'a_UV');
   if (a_UV < 0) {
     console.log('Failed to get the storage location of a_UV');
+    return;
+  }
+
+  // Get the storage location of a_UV
+  a_Normal = gl.getAttribLocation(gl.program, 'a_Normal');
+  if (a_Normal < 0) {
+    console.log('Failed to get the storage location of a_Normal');
     return;
   }
 
@@ -166,9 +181,19 @@ let g_selectedSize  = 5.0;
 let g_globalAngle = 0;
 // Global HTML elements
 let h_angleSlide = document.getElementById('angleSlide');
+let g_normalOn = false;
+
 
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
+  // Button Events
+  document.getElementById('normalOn').onclick = function() {
+    g_normalOn = true;
+  };
+  document.getElementById('normalOff').onclick = function() {
+    g_normalOn = false;
+  }
+
   // Angle Slider Events
   h_angleSlide.addEventListener('input',
     function() {
@@ -412,7 +437,8 @@ function renderAllShapes() {
   viewMat.setLookAt(
     camera.eye.elements[0],camera.eye.elements[1],camera.eye.elements[2],
     camera.at.elements[0], camera.at.elements[1], camera.at.elements[2],
-    camera.up.elements[0], camera.up.elements[1], camera.up.elements[2]);
+    camera.up.elements[0], camera.up.elements[1], camera.up.elements[2]
+  );
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
   // Pass matrix to u_ModelMatrix attribute
@@ -428,6 +454,7 @@ function renderAllShapes() {
 
   // Test cube 1
   let test1 = new Cube();
+  if (g_normalOn) test1.textureNum = -3;
   test1.color = WHITE;
   test1.matrix.rotate(10,1,0,0);
   test1.matrix.scale(0.5,0.5,0.5);
@@ -437,6 +464,7 @@ function renderAllShapes() {
   let test2 = new Cube();
   test2.color = LIGHT;
   test2.textureNum = -2;
+  if (g_normalOn) test2.textureNum = -3;
   test2.matrix.translate(-1,-0.5,0.5);
   test2.matrix.rotate(45,1,1,0);
   test2.matrix.scale(0.5,0.5,0.5);
@@ -446,6 +474,7 @@ function renderAllShapes() {
   let sky = new Cube();
   sky.color = [1,0,0,1];
   sky.textureNum = 0;
+  // if (g_normalOn) sky.textureNum = -3;
   sky.matrix.scale(100, 100, 100);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   cubeList.push(sky);
@@ -454,6 +483,7 @@ function renderAllShapes() {
   let floor = new Cube();
   floor.color = [1.0,0,0,1];
   floor.textureNum = 1;
+  // if (g_normalOn) floor.textureNum = -3;
   floor.matrix.translate(0, -1, 0);
   floor.matrix.scale(16, 0.25, 16);
   floor.matrix.translate(-0.5, 0, -0.5);
@@ -463,9 +493,10 @@ function renderAllShapes() {
   let box = new Cube();
   box.color = [1.0,0,0,1];
   box.textureNum = -2;
+  if (g_normalOn) box.textureNum = -3;
   box.matrix.translate(0,0,0);
-  box.matrix.scale(5,5,5);
-  box.matrix.translate(-0.5,-0.2,-0.5);
+  box.matrix.scale(-5,-5,-5);
+  box.matrix.translate(-0.5,-0.8,-0.5);
   cubeList.push(box);
 
   for (cube of cubeList) {
