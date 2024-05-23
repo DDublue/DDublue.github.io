@@ -13,13 +13,21 @@
       <div id="performance">
         ms: fps:
       </div>
-      <p>-</p>
       <div>
         Camera Angle:
         <input type="range" min="0" max="359" value="45" class="slider" id="angleSlide">
       </div>
-      <button type="button" id="normalOn">Normal On</button>
-      <button type="button" id="normalOff">Normal Off</button>
+      <p>-</p>
+      <div>
+        <button type="button" id="normalOn">Normal On</button>
+        <button type="button" id="normalOff">Normal Off</button>
+      </div>
+      <br>
+      <div>
+        Light X <input type="range" min="-250" max="250" value="0" class="slider" id="lightSlideX">
+        Light Y <input type="range" min="-250" max="250" value="0" class="slider" id="lightSlideY">
+        Light Z <input type="range" min="-250" max="250" value="0" class="slider" id="lightSlideZ">
+      </div>
     </section>
     <br><br>
     <br><br>
@@ -42,6 +50,7 @@
     <script src="Triangle.js"></script>
     <script src="Circle.js"></script>
     <script src="Cube.js"></script>
+    <script src="Sphere.js"></script>
     <script src="Pyramid.js"></script>
     <script src="Point.js"></script>
     <script src="Camera.js"></script>

@@ -8,6 +8,7 @@ attribute vec2 a_UV;
 attribute vec3 a_Normal;
 varying vec2 v_UV;
 varying vec3 v_Normal;
+varying vec4 v_VertPos;
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_GlobalRotateMatrix;
 uniform mat4 u_ViewMatrix;
@@ -16,6 +17,7 @@ void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     v_UV = a_UV;
     v_Normal = a_Normal;
+    v_VertPos = u_ModelMatrix * a_Position;
   }`
 
 // Fragment shader program
@@ -27,6 +29,8 @@ var FSHADER_SOURCE = `
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
   uniform int u_whichTexture;
+  uniform vec3 u_lightPos;
+  varying vec4 v_VertPos;
   void main() {
     if (u_whichTexture == -3) {
       gl_FragColor = vec4((v_Normal + 1.0)/2.0, 1.0);   // Use normal
@@ -47,6 +51,14 @@ var FSHADER_SOURCE = `
       gl_FragColor = vec4(0.1,0.2,0.2,1);
     }
 
+    vec3 lightVector = vec3(v_VertPos) - u_lightPos;
+    float r = length(lightVector);
+    if (r < 1.0) {
+      gl_FragColor = vec4(1,0,0,1);
+    } else if (r < 2.0) {
+      gl_FragColor = vec4(0,1,0,1);
+    }
+
   }`
 
 // Global variables
@@ -63,6 +75,7 @@ let u_ViewMatrix;
 let u_GlobalRotateMatrix;
 let u_Sampler0;
 let u_whichTexture;
+let u_lightPos;
 
 function setupWebGL() {
   // Retrieve <canvas> element
@@ -99,7 +112,7 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // Get the storage location of a_UV
+  // Get the storage location of a_Normal
   a_Normal = gl.getAttribLocation(gl.program, 'a_Normal');
   if (a_Normal < 0) {
     console.log('Failed to get the storage location of a_Normal');
@@ -120,6 +133,13 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  // Get the storage location of u_lightPos
+  u_lightPos = gl.getUniformLocation(gl.program, 'u_lightPos');
+  if (!u_lightPos) {
+    console.log('Failed to get the storage location of u_lightPos');
+    return;
+  }
+  
   // Get the storage location of u_ModelMatrix
   u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
   if (!u_ModelMatrix) {
@@ -182,7 +202,7 @@ let g_globalAngle = 0;
 // Global HTML elements
 let h_angleSlide = document.getElementById('angleSlide');
 let g_normalOn = false;
-
+let g_lightPos = [0,1,-2];
 
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
@@ -193,6 +213,29 @@ function addActionsForHtmlUI() {
   document.getElementById('normalOff').onclick = function() {
     g_normalOn = false;
   }
+
+  // Slider Events
+  document.getElementById('lightSlideX').addEventListener('mousemove',
+    function(ev) {
+      if (ev.buttons == 1) {
+       g_lightPos[0] = this.value/100; renderAllShapes(); 
+      }
+    }
+  );
+  document.getElementById('lightSlideY').addEventListener('mousemove',
+    function(ev) {
+      if (ev.buttons == 1) {
+       g_lightPos[1] = this.value/100; renderAllShapes(); 
+      }
+    }
+  );
+  document.getElementById('lightSlideZ').addEventListener('mousemove',
+    function(ev) {
+      if (ev.buttons == 1) {
+       g_lightPos[2] = this.value/100; renderAllShapes(); 
+      }
+    }
+  );
 
   // Angle Slider Events
   h_angleSlide.addEventListener('input',
@@ -448,9 +491,22 @@ function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  let cubeList = [];
+  let shapeList = [];
 
   // // Drawing
+
+  // Pass the light position to GLSL
+  gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+
+  // Light source
+  let light = new Cube();
+  light.color = [2,2,0,1];
+  light.textureNum = -2;
+  light.matrix.translate(g_lightPos[0],g_lightPos[1],g_lightPos[2]);
+  light.matrix.scale(0.1,0.1,0.1);
+  light.matrix.translate(-0.5,-0.5,-0.5);
+  shapeList.push(light);
+
 
   // Test cube 1
   let test1 = new Cube();
@@ -458,7 +514,7 @@ function renderAllShapes() {
   test1.color = WHITE;
   test1.matrix.rotate(10,1,0,0);
   test1.matrix.scale(0.5,0.5,0.5);
-  cubeList.push(test1);
+  shapeList.push(test1);
   
   // Test cube 2
   let test2 = new Cube();
@@ -468,7 +524,7 @@ function renderAllShapes() {
   test2.matrix.translate(-1,-0.5,0.5);
   test2.matrix.rotate(45,1,1,0);
   test2.matrix.scale(0.5,0.5,0.5);
-  cubeList.push(test2);
+  shapeList.push(test2);
   
   // Draw the sky
   let sky = new Cube();
@@ -477,7 +533,7 @@ function renderAllShapes() {
   // if (g_normalOn) sky.textureNum = -3;
   sky.matrix.scale(100, 100, 100);
   sky.matrix.translate(-0.5, -0.5, -0.5);
-  cubeList.push(sky);
+  shapeList.push(sky);
   
   // Draw the floor
   let floor = new Cube();
@@ -487,7 +543,7 @@ function renderAllShapes() {
   floor.matrix.translate(0, -1, 0);
   floor.matrix.scale(16, 0.25, 16);
   floor.matrix.translate(-0.5, 0, -0.5);
-  cubeList.push(floor);
+  shapeList.push(floor);
 
   // Stuck in a cube
   let box = new Cube();
@@ -495,12 +551,21 @@ function renderAllShapes() {
   box.textureNum = -2;
   if (g_normalOn) box.textureNum = -3;
   box.matrix.translate(0,0,0);
-  box.matrix.scale(-5,-5,-5);
+  box.matrix.scale(-10,-10,-10);
   box.matrix.translate(-0.5,-0.8,-0.5);
-  cubeList.push(box);
+  shapeList.push(box);
 
-  for (cube of cubeList) {
-    cube.render();
+  // Sphere test
+  let sphere1 = new Sphere();
+  sphere1.textureNum = 0;
+  if (g_normalOn) sphere1.textureNum = -3;
+  sphere1.matrix.translate(0,0,0);
+  sphere1.matrix.scale(0.5,0.5,0.5);
+  sphere1.matrix.translate(2.5,0.4,0.5);
+  shapeList.push(sphere1);
+
+  for (shape of shapeList) {
+    shape.render();
   }
 
   // drawMap();
