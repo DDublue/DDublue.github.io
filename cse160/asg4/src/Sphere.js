@@ -7,6 +7,7 @@ class Sphere {
       this.type = 'sphere';
       this.color = color;
       this.matrix = new Matrix4();
+      this.normalMatrix = new Matrix4();
       this.textureNum = -2;
       this.vertexBuffer = null;
       this.uvBuffer = null;
@@ -24,6 +25,8 @@ class Sphere {
 
       // Pass the matrix to u_ModelMatrix attribute
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+
+      gl.uniformMatrix4fv(u_NormalMatrix, false, this.normalMatrix.elements);
 
       let d  = Math.PI / 10;
       let dd = Math.PI / 10;

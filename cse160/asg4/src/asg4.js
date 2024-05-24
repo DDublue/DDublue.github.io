@@ -1,5 +1,4 @@
 // asg3.js
-
 // Vertex shader program
 var VSHADER_SOURCE = `
 precision mediump float;
@@ -10,13 +9,14 @@ varying vec2 v_UV;
 varying vec3 v_Normal;
 varying vec4 v_VertPos;
 uniform mat4 u_ModelMatrix;
+uniform mat4 u_NormalMatrix;
 uniform mat4 u_GlobalRotateMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
 void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     v_UV = a_UV;
-    v_Normal = a_Normal;
+    v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal,1)));
     v_VertPos = u_ModelMatrix * a_Position;
   }`
 
@@ -30,10 +30,13 @@ var FSHADER_SOURCE = `
   uniform sampler2D u_Sampler1;
   uniform int u_whichTexture;
   uniform vec3 u_lightPos;
+  uniform vec3 u_cameraPos;
   varying vec4 v_VertPos;
+  uniform bool u_lightOn;
   void main() {
     if (u_whichTexture == -3) {
       gl_FragColor = vec4((v_Normal + 1.0)/2.0, 1.0);   // Use normal
+
     }
     else if (u_whichTexture == -2) {                    // Use color
       gl_FragColor = u_FragColor;
@@ -51,14 +54,28 @@ var FSHADER_SOURCE = `
       gl_FragColor = vec4(0.1,0.2,0.2,1);
     }
 
-    vec3 lightVector = vec3(v_VertPos) - u_lightPos;
-    float r = length(lightVector);
-    if (r < 1.0) {
-      gl_FragColor = vec4(1,0,0,1);
-    } else if (r < 2.0) {
-      gl_FragColor = vec4(0,1,0,1);
-    }
+    vec3 lightVector = u_lightPos-vec3(v_VertPos);
+    float r=length(lightVector);
 
+    // N dot L
+    vec3 L = normalize(lightVector);
+    vec3 N = normalize(v_Normal);
+    float nDotL = max(dot(N,L), 0.0);
+
+    // Reflection
+    vec3 R = reflect(-L, N);
+
+    // Eye
+    vec3 E = normalize(u_cameraPos-vec3(v_VertPos));
+
+    // Specular
+    float specular = pow(max(dot(E,R), 0.0), 128.0);
+
+    vec3 diffuse = vec3(gl_FragColor) * nDotL * 0.7;
+    vec3 ambient = vec3(gl_FragColor) * 0.2;
+    if (u_lightOn) {
+        gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
+    }
   }`
 
 // Global variables
@@ -70,12 +87,15 @@ let a_Normal;
 let u_FragColor;
 let u_Size;
 let u_ModelMatrix;
+let u_NormalMatrix;
 let u_ProjectionMatrix;
 let u_ViewMatrix;
 let u_GlobalRotateMatrix;
 let u_Sampler0;
 let u_whichTexture;
 let u_lightPos;
+let u_cameraPos;
+let u_lightOn;
 
 function setupWebGL() {
   // Retrieve <canvas> element
@@ -138,6 +158,20 @@ function connectVariablesToGLSL() {
   if (!u_lightPos) {
     console.log('Failed to get the storage location of u_lightPos');
     return;
+  }  
+
+  // Get the storage location of u_cameraPos
+  u_cameraPos = gl.getUniformLocation(gl.program, 'u_cameraPos');
+  if (!u_cameraPos) {
+    console.log('Failed to get the storage location of u_cameraPos');
+    return;
+  }
+  
+  // Get the storage location of u_lightOn
+  u_lightOn = gl.getUniformLocation(gl.program, 'u_lightOn');
+  if (!u_lightOn) {
+    console.log('Failed to get the storage location of u_lightOn');
+    return;
   }
   
   // Get the storage location of u_ModelMatrix
@@ -151,6 +185,13 @@ function connectVariablesToGLSL() {
   u_GlobalRotateMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotateMatrix');
   if (!u_GlobalRotateMatrix) {
     console.log('Failed to get the storage location of u_GlobalRotateMatrix');
+    return;
+  }
+
+  // Get the storage location of u_NormalMatrix
+  u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+  if (!u_NormalMatrix) {
+    console.log('Failed to get the storage location of u_NormalMatrix');
     return;
   }
 
@@ -202,7 +243,9 @@ let g_globalAngle = 0;
 // Global HTML elements
 let h_angleSlide = document.getElementById('angleSlide');
 let g_normalOn = false;
-let g_lightPos = [0,1,-2];
+let g_lightPos = [0,1,0];
+let animateLight = false;
+let g_lightOn = true;
 
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
@@ -213,7 +256,20 @@ function addActionsForHtmlUI() {
   document.getElementById('normalOff').onclick = function() {
     g_normalOn = false;
   }
-
+  document.getElementById('animateLightOn').onclick = function() {
+    animateLight = true;
+  }
+  document.getElementById('animateLightOff').onclick = function() {
+    animateLight = false;
+  }
+  document.getElementById('turnLightOn').onclick = function() {
+    g_lightOn = true;
+  }
+  document.getElementById('turnLightOff').onclick = function() {
+    g_lightOn = false;
+  }
+  
+  
   // Slider Events
   document.getElementById('lightSlideX').addEventListener('mousemove',
     function(ev) {
@@ -346,11 +402,17 @@ function tick() {
   g_seconds = performance.now()/1000.0 - g_startTime;
   // console.log(g_seconds); // DEBUG
 
+  updateAnimationAngles();
+
   // Draw everything
   renderAllShapes();
 
   // Tell the browser to update again when it has time
   requestAnimationFrame(tick);
+}
+
+function updateAnimationAngles() {
+  if (animateLight) g_lightPos[0] = cos(g_seconds);
 }
 
 let camera = new Camera(); 
@@ -497,13 +559,18 @@ function renderAllShapes() {
 
   // Pass the light position to GLSL
   gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+  // Pass the camera position to GLSL
+  gl.uniform3f(u_cameraPos, camera.eye.x, camera.eye.y, camera.eye.z);
+  // Pass the light status
+  gl.uniform1i(u_lightOn, g_lightOn);
 
+  
   // Light source
   let light = new Cube();
   light.color = [2,2,0,1];
   light.textureNum = -2;
   light.matrix.translate(g_lightPos[0],g_lightPos[1],g_lightPos[2]);
-  light.matrix.scale(0.1,0.1,0.1);
+  light.matrix.scale(-0.1,-0.1,-0.1);
   light.matrix.translate(-0.5,-0.5,-0.5);
   shapeList.push(light);
 
@@ -514,6 +581,7 @@ function renderAllShapes() {
   test1.color = WHITE;
   test1.matrix.rotate(10,1,0,0);
   test1.matrix.scale(0.5,0.5,0.5);
+  test1.normalMatrix.setInverseOf(test1.matrix).transpose();
   shapeList.push(test1);
   
   // Test cube 2
@@ -524,6 +592,7 @@ function renderAllShapes() {
   test2.matrix.translate(-1,-0.5,0.5);
   test2.matrix.rotate(45,1,1,0);
   test2.matrix.scale(0.5,0.5,0.5);
+  test2.normalMatrix.setInverseOf(test2.matrix).transpose();
   shapeList.push(test2);
   
   // Draw the sky
@@ -550,9 +619,9 @@ function renderAllShapes() {
   box.color = [1.0,0,0,1];
   box.textureNum = -2;
   if (g_normalOn) box.textureNum = -3;
-  box.matrix.translate(0,0,0);
-  box.matrix.scale(-10,-10,-10);
-  box.matrix.translate(-0.5,-0.8,-0.5);
+  box.matrix.translate(0,1,1);
+  box.matrix.scale(-4,-4,-4);
+  box.matrix.translate(-0.5,-0.5,-0.5);
   shapeList.push(box);
 
   // Sphere test
@@ -562,6 +631,7 @@ function renderAllShapes() {
   sphere1.matrix.translate(0,0,0);
   sphere1.matrix.scale(0.5,0.5,0.5);
   sphere1.matrix.translate(2.5,0.4,0.5);
+  sphere1.normalMatrix.setInverseOf(sphere1.matrix).transpose();
   shapeList.push(sphere1);
 
   for (shape of shapeList) {
