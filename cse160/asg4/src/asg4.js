@@ -26,6 +26,9 @@ var FSHADER_SOURCE = `
   varying vec2 v_UV;
   varying vec3 v_Normal;
   uniform vec4 u_FragColor;
+  uniform vec3 u_AmbientColor;
+  uniform vec3 u_DiffuseColor;
+  uniform vec3 u_SpecularColor;
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
   uniform int u_whichTexture;
@@ -69,10 +72,10 @@ var FSHADER_SOURCE = `
     vec3 E = normalize(u_cameraPos-vec3(v_VertPos));
 
     // Specular
-    float specular = pow(max(dot(E,R), 0.0), 128.0);
+    vec3 specular = u_SpecularColor * vec3(gl_FragColor) * pow(max(dot(E,R), 0.0), 128.0);
 
-    vec3 diffuse = vec3(gl_FragColor) * nDotL * 0.7;
-    vec3 ambient = vec3(gl_FragColor) * 0.2;
+    vec3 diffuse = u_DiffuseColor * vec3(gl_FragColor) * nDotL;
+    vec3 ambient = u_AmbientColor * vec3(gl_FragColor);
     if (u_lightOn) {
         gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
     }
@@ -84,7 +87,12 @@ let gl;
 let a_Position;
 let a_UV;
 let a_Normal;
+
 let u_FragColor;
+let u_AmbientColor;
+let u_DiffuseColor;
+let u_SpecularColor;
+
 let u_Size;
 let u_ModelMatrix;
 let u_NormalMatrix;
@@ -150,6 +158,24 @@ function connectVariablesToGLSL() {
   u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
   if (!u_FragColor) {
     console.log('Failed to get the storage location of u_FragColor');
+    return;
+  }
+  // Get the storage location of u_AmbientColor
+  u_AmbientColor = gl.getUniformLocation(gl.program, 'u_AmbientColor');
+  if (!u_AmbientColor) {
+    console.log('Failed to get the storage location of u_AmbientColor');
+    return;
+  }
+  // Get the storage location of u_DiffuseColor
+  u_DiffuseColor = gl.getUniformLocation(gl.program, 'u_DiffuseColor');
+  if (!u_DiffuseColor) {
+    console.log('Failed to get the storage location of u_DiffuseColor');
+    return;
+  }
+  // Get the storage location of u_SpecularColor
+  u_SpecularColor = gl.getUniformLocation(gl.program, 'u_SpecularColor');
+  if (!u_SpecularColor) {
+    console.log('Failed to get the storage location of u_SpecularColor');
     return;
   }
 
@@ -246,6 +272,10 @@ let g_normalOn = false;
 let g_lightPos = [0,1,0];
 let animateLight = false;
 let g_lightOn = true;
+let g_spotLightPos = [-2,1,-2];
+let g_Ambient = [0.5,0.5,0.5];
+let g_Diffuse = [0.5,0.5,0.5];
+let g_Specular = [0.5,0.5,0.5];
 
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
@@ -269,29 +299,51 @@ function addActionsForHtmlUI() {
     g_lightOn = false;
   }
   
-  
+
   // Slider Events
   document.getElementById('lightSlideX').addEventListener('mousemove',
-    function(ev) {
-      if (ev.buttons == 1) {
-       g_lightPos[0] = this.value/100; renderAllShapes(); 
-      }
-    }
+    function(ev) {if (ev.buttons == 1) {g_lightPos[0] = this.value/100; renderAllShapes();}}
   );
   document.getElementById('lightSlideY').addEventListener('mousemove',
-    function(ev) {
-      if (ev.buttons == 1) {
-       g_lightPos[1] = this.value/100; renderAllShapes(); 
-      }
-    }
+    function(ev) {if (ev.buttons == 1) {g_lightPos[1] = this.value/100; renderAllShapes();}}
   );
   document.getElementById('lightSlideZ').addEventListener('mousemove',
-    function(ev) {
-      if (ev.buttons == 1) {
-       g_lightPos[2] = this.value/100; renderAllShapes(); 
-      }
-    }
+    function(ev) {if (ev.buttons == 1) {g_lightPos[2] = this.value/100; renderAllShapes();}}
   );
+
+  //----------------------------
+  document.getElementById('AmbientR').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Ambient[0] = this.value; renderAllShapes();}}
+  );
+  document.getElementById('AmbientG').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Ambient[1] = this.value; renderAllShapes();}}
+  );
+  document.getElementById('AmbientB').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Ambient[2] = this.value; renderAllShapes();}}
+  );
+
+  //---------------------------
+  document.getElementById('DiffuseR').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Diffuse[0] = this.value; renderAllShapes();}}
+  );
+  document.getElementById('DiffuseG').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Diffuse[1] = this.value; renderAllShapes();}}
+  );
+  document.getElementById('DiffuseB').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Diffuse[2] = this.value; renderAllShapes();}}
+  );
+
+  //----------------------------
+  document.getElementById('SpecularR').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Specular[0] = this.value; renderAllShapes();}}
+  );
+  document.getElementById('SpecularG').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Specular[1] = this.value; renderAllShapes();}}
+  );
+  document.getElementById('SpecularB').addEventListener('mousemove',
+    function(ev) {if (ev.buttons == 1) {g_Specular[2] = this.value; renderAllShapes();}}
+  );
+
 
   // Angle Slider Events
   h_angleSlide.addEventListener('input',
@@ -564,15 +616,20 @@ function renderAllShapes() {
   // Pass the light status
   gl.uniform1i(u_lightOn, g_lightOn);
 
-  
+  gl.uniform3f(u_AmbientColor, g_Ambient[0], g_Ambient[1], g_Ambient[2]);
+  gl.uniform3f(u_DiffuseColor, g_Diffuse[0], g_Diffuse[1], g_Diffuse[2]);
+  gl.uniform3f(u_SpecularColor,g_Specular[0],g_Specular[1],g_Specular[2]);
+
   // Light source
-  let light = new Cube();
-  light.color = [2,2,0,1];
-  light.textureNum = -2;
-  light.matrix.translate(g_lightPos[0],g_lightPos[1],g_lightPos[2]);
-  light.matrix.scale(-0.1,-0.1,-0.1);
-  light.matrix.translate(-0.5,-0.5,-0.5);
-  shapeList.push(light);
+  let pointLight = new Cube();
+  pointLight.color = [2,2,0,1];
+  pointLight.textureNum = -2;
+  pointLight.matrix.translate(g_lightPos[0],g_lightPos[1],g_lightPos[2]);
+  pointLight.matrix.scale(-0.1,-0.1,-0.1);
+  pointLight.matrix.translate(-0.5,-0.5,-0.5);
+  shapeList.push(pointLight);
+
+
 
 
   // Test cube 1
