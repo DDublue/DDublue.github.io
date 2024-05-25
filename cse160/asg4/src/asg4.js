@@ -612,7 +612,7 @@ function renderAllShapes() {
   // Pass the light position to GLSL
   gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
   // Pass the camera position to GLSL
-  gl.uniform3f(u_cameraPos, camera.eye.x, camera.eye.y, camera.eye.z);
+  gl.uniform3f(u_cameraPos, camera.eye.elements[0], camera.eye.elements[1], camera.eye.elements[2]);
   // Pass the light status
   gl.uniform1i(u_lightOn, g_lightOn);
 
