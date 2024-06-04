@@ -3,11 +3,16 @@ import {OrbitControls} from '../lib/node_modules/addons/OrbitControls.js';
 import {MTLLoader} from '../lib/node_modules/addons/MTLLoader.js';
 import {OBJLoader} from '../lib/node_modules/addons/OBJLoader.js';
 
+import { ARButton } from '../lib/node_modules/addons/ARButton.js';
+
 // Help from three.js tutorials linked on asg 5a canvas page
 function main() {
   // Canvas setup
   const canvas = document.querySelector('#c');
   const renderer = new THREE.WebGLRenderer( {antialias: true, canvas, alpha: true} );
+
+  // AR Stuff
+  document.body.appendChild(ARButton.createButton(renderer));
 
   // Camera setup
   const fov = 75;
